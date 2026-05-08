@@ -133,8 +133,13 @@
   services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  # NOTE: as of nixos-25.11 the display- and desktop-manager options
+  # moved out from under `services.xserver.*` to top-level
+  # `services.displayManager.*` / `services.desktopManager.*` since
+  # they're no longer X11-specific (Wayland uses them too). The old
+  # paths still evaluate but emit a deprecation warning.
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # --- Strip GNOME bloat -----------------------------------------------
   # GNOME ships a lot of default apps most people never use. We exclude
@@ -400,7 +405,7 @@
     nerd-fonts.fira-code        # Backup, in case you switch
     noto-fonts                  # Broad Unicode coverage
     noto-fonts-cjk-sans         # Chinese / Japanese / Korean
-    noto-fonts-emoji            # Color emoji
+    noto-fonts-color-emoji      # Color emoji (renamed from noto-fonts-emoji in 25.11)
   ];
 
   # Allow unfree packages
