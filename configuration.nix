@@ -278,8 +278,13 @@
     # shell so chsh / this option won't fail validation.
     shell = pkgs.zsh;
 
+    # Per-user packages go here. This list is empty on purpose —
+    # everything is installed in environment.systemPackages above so
+    # any future user account on this box gets the same toolkit. Move
+    # apps here if you ever want them visible only to chahat (e.g. a
+    # personal license-bound app you don't want exposed to a guest
+    # account).
     packages = with pkgs; [
-    #  thunderbird
     ];
   };
 
@@ -565,6 +570,9 @@
 
     # --- Password manager ---
     keepassxc                 # Local KeePass-format password vault
+
+    # --- Mail ---
+    thunderbird               # Mozilla email / calendar / news client
 
     # --- OPTIONAL: GUI apps ------------------------------------------
     # chromium
