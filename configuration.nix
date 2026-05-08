@@ -434,11 +434,9 @@
 
     # --- Shell prompt + plugin manager ---
     # NOTE: paths differ from macOS Homebrew. In your ~/.zshrc:
-    #   - antidote lives at  ${pkgs.antidote}/share/antidote/antidote.zsh
+    #   - antidote lives at /run/current-system/sw/share/antidote/antidote.zsh
     #     (your line `source ~/.antidote/antidote.zsh` won't work on NixOS)
-    #   - p10k lives at ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-    # Update those two source lines when you stow zsh on this box.
-    zsh-powerlevel10k
+    #   - powerlevel10k is built by antidote, no need for it to be built by this config
     antidote
 
     # --- File search & navigation (mirrors Brewfile) ---
