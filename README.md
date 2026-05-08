@@ -81,4 +81,6 @@ are documented inline in `configuration.nix` next to the GC block.
 
 ## License
 
-[GNU Affero General Public License v3.0](LICENSE).
+Copyright (C) 2026 Chahatpreet Singh.
+Licensed under the [GNU Affero General Public License v3.0](LICENSE)
+or, at your option, any later version.
