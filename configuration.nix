@@ -570,7 +570,7 @@
     # --- OPTIONAL: extra git tooling --------------------------------
     # Uncomment whichever you want.
     # lazygit                 # TUI git client
-    # delta                   # Better git diff (set as core.pager in gitconfig)
+    delta                     # Better git diff (set as core.pager in gitconfig)
 
     # --- OPTIONAL: extra language toolchains -------------------------
     # node / python / go / cargo / jdk are already installed above.
