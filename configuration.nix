@@ -320,13 +320,25 @@
   };
   programs.command-not-found.enable = false;
 
-  # Start ssh-agent on login. Your gitconfig signs commits with an SSH
-  # key (gpg.format = ssh, signingkey = ~/.ssh/id_ed25519), so the agent
-  # needs to be running. NOTE: your dotfiles' integrations.zsh contains
+  # SSH agent. Your gitconfig signs commits with an SSH key
+  # (gpg.format = ssh, signingkey = ~/.ssh/id_ed25519), so an agent
+  # needs to be running for passphrase-protected keys.
+  #
+  # On GNOME we DO NOT enable `programs.ssh.startAgent` — GNOME 47+ ships
+  # `services.gnome.gcr-ssh-agent` (enabled by default with the GNOME
+  # module) which is a keyring-backed SSH agent. The two conflict at
+  # eval time ("only one ssh agent can be installed at a time"), so we
+  # let the GNOME default win. `gcr-ssh-agent` exports SSH_AUTH_SOCK
+  # automatically; just run `ssh-add` once and the GNOME keyring will
+  # remember the passphrase across sessions (unlocked by your login).
+  #
+  # If you ever switch off GNOME, flip this on and you're back to the
+  # plain OpenSSH agent:
+  # programs.ssh.startAgent = true;
+  #
+  # NOTE: your dotfiles' integrations.zsh contains
   # `ssh-add --apple-load-keychain`, which is macOS-only — on NixOS just
-  # run `ssh-add` once per session (or use a wrapper that adds keys
-  # interactively the first time they're needed).
-  programs.ssh.startAgent = true;
+  # run `ssh-add` once and the keyring takes it from there.
 
   # ============================================================
   # NEOVIM / MASON SUPPORT
