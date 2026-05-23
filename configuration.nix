@@ -372,6 +372,7 @@
       curl               # libcurl
       icu                # Unicode — used by some language servers
       libxml2
+      libsecret          # Required for google antigravity's keyring auth fallback
       glib
     ];
   };
