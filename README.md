@@ -1,10 +1,6 @@
 # dotnix
 
-NixOS configuration for my Linux laptop. A single, heavily commented
-`configuration.nix` targeting **NixOS 25.11 stable**, designed to mirror
-the macOS environment in [singhc7/.mac](https://github.com/singhc7/.mac)
-so the shell, terminal, editor, and tooling feel identical on either
-side.
+A flake-based NixOS configuration for my Linux laptop targeting **NixOS 25.11 stable**, designed to mirror the macOS environment in [singhc7/.mac](https://github.com/singhc7/.mac) so the shell, terminal, editor, and tooling feel identical on either side.
 
 ## Overview
 
@@ -35,34 +31,25 @@ describing what it does and the tradeoff before flipping it on.
 
 ```
 .
-├── configuration.nix    # Single source of truth — every option commented
-├── LICENSE              # GNU AGPL-3.0
+├── configuration.nix           # Main system configuration (every option commented)
+├── flake.lock                  # Lockfile for the flake dependencies
+├── flake.nix                   # Flake configuration pinning nixpkgs and system setup
+├── hardware-configuration.nix  # Hardware-specific scan results (tracked locally)
+├── LICENSE                     # GNU AGPL-3.0
 └── README.md
 ```
 
-`hardware-configuration.nix` is **not** tracked. It is generated on
-each target machine by `nixos-generate-config` and is hardware-specific
-(disk UUIDs, CPU microcode module, kernel modules for the boot
-process). It lives alongside `configuration.nix` in `/etc/nixos/`
-on the target box.
+`hardware-configuration.nix` is now tracked locally inside the repository and imported by [flake.nix](flake.nix).
 
 ## Deployment
 
-On the target NixOS machine:
+On the target NixOS machine, rebuild the system directly using the flake:
 
 ```sh
-# Plain copy
-sudo cp configuration.nix /etc/nixos/configuration.nix
-sudo nixos-rebuild switch
-
-# Or symlink so `git pull` updates the active config
-sudo ln -sf "$PWD/configuration.nix" /etc/nixos/configuration.nix
-sudo nixos-rebuild switch
+sudo nixos-rebuild switch --flake .#nixos
 ```
 
-After the rebuild, set zsh as the active shell with `chsh -s $(which zsh)`
-(the user already has `shell = pkgs.zsh` declared, but interactive
-`chsh` finalises it on existing sessions).
+After the rebuild, set zsh as the active shell with `chsh -s $(which zsh)` (the user already has `shell = pkgs.zsh` declared, but interactive `chsh` finalises it on existing sessions).
 
 ## Companion dotfiles
 
@@ -75,9 +62,13 @@ nix store, not `~/.antidote` or `$(brew --prefix)`).
 
 ## Release upgrades
 
-The config is pinned to `nixos-25.11`. To move to a newer release,
-update the channel URL and bump `system.stateVersion`. Both steps
-are documented inline in `configuration.nix` next to the GC block.
+The configuration inputs are pinned via [flake.lock](flake.lock). To update the pinned channel packages:
+
+```sh
+nix flake update
+```
+
+To move to a newer release channel (e.g., `nixos-26.05`), update the `url` under `inputs.nixpkgs` in [flake.nix](flake.nix), run `nix flake update`, and rebuild the system.
 
 ## License
 
