@@ -589,6 +589,9 @@
     # --- Password manager ---
     keepassxc # Local KeePass-format password vault
 
+    # --- Security and Keychain injection handling ---
+    libsecret
+
     # --- Mail ---
     thunderbird # Mozilla email / calendar / news client
 
