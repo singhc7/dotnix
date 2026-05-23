@@ -478,6 +478,7 @@
     stow # symlink-based dotfiles manager (you use this on macOS)
 
     # --- Build essentials (you'll want these the first time you `make` anything) ---
+    clang # Better error messages than gcc
     gcc
     gnumake
     pkg-config
