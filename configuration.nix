@@ -23,7 +23,8 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
 
@@ -146,19 +147,19 @@
   # them so they don't clutter the app grid or the installation closure.
   # Re-add anything you actually want by deleting it from this list.
   environment.gnome.excludePackages = (with pkgs; [
-    gnome-tour          # First-run tutorial slideshow
-    gnome-connections   # RDP/VNC client
-    epiphany            # GNOME Web browser (we use Firefox)
-    geary               # Email client
-    totem               # Video player (we use mpv)
-    yelp                # GNOME help viewer
-    gnome-music         # Music player
-    gnome-contacts      # Contacts app
-    gnome-maps          # Maps app
-    gnome-weather       # Weather widget
-    gnome-clocks        # Clocks app (timer/world clock)
-    simple-scan         # Scanner front-end
-    cheese              # Webcam toy
+    gnome-tour # First-run tutorial slideshow
+    gnome-connections # RDP/VNC client
+    epiphany # GNOME Web browser (we use Firefox)
+    geary # Email client
+    totem # Video player (we use mpv)
+    yelp # GNOME help viewer
+    gnome-music # Music player
+    gnome-contacts # Contacts app
+    gnome-maps # Maps app
+    gnome-weather # Weather widget
+    gnome-clocks # Clocks app (timer/world clock)
+    simple-scan # Scanner front-end
+    cheese # Webcam toy
   ]);
 
   # GNOME ships its own power daemon. We disable it because we use TLP
@@ -366,13 +367,13 @@
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
-      stdenv.cc.cc.lib   # libstdc++ — needed by lots of Mason binaries
-      zlib               # compression — pulled in by nearly everything
-      openssl            # TLS — needed by anything that talks to a registry
-      curl               # libcurl
-      icu                # Unicode — used by some language servers
+      stdenv.cc.cc.lib # libstdc++ — needed by lots of Mason binaries
+      zlib # compression — pulled in by nearly everything
+      openssl # TLS — needed by anything that talks to a registry
+      curl # libcurl
+      icu # Unicode — used by some language servers
       libxml2
-      libsecret          # Required for google antigravity's keyring auth fallback
+      libsecret # Required for google antigravity's keyring auth fallback
       glib
     ];
   };
@@ -402,11 +403,11 @@
   # these you get tofu/squares. JetBrainsMono is the "main" font; the
   # rest cover Unicode coverage gaps (CJK, emoji).
   fonts.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono   # Primary terminal font
-    nerd-fonts.fira-code        # Backup, in case you switch
-    noto-fonts                  # Broad Unicode coverage
-    noto-fonts-cjk-sans         # Chinese / Japanese / Korean
-    noto-fonts-color-emoji      # Color emoji (renamed from noto-fonts-emoji in 25.11)
+    nerd-fonts.jetbrains-mono # Primary terminal font
+    nerd-fonts.fira-code # Backup, in case you switch
+    noto-fonts # Broad Unicode coverage
+    noto-fonts-cjk-sans # Chinese / Japanese / Korean
+    noto-fonts-color-emoji # Color emoji (renamed from noto-fonts-emoji in 25.11)
   ];
 
   # Allow unfree packages
@@ -423,15 +424,15 @@
   # Anything you DON'T want, just delete the line. Anything new you
   # want, add it under the relevant heading.
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    #  wget
 
     # --- Editor ---
-    neovim                    # Your editor; kickstart config in ~/.config/nvim
+    neovim # Your editor; kickstart config in ~/.config/nvim
 
     # --- Terminal & multiplexer ---
-    kitty                     # Primary terminal emulator
-    tmux                      # Terminal multiplexer
+    kitty # Primary terminal emulator
+    tmux # Terminal multiplexer
 
     # --- Shell prompt + plugin manager ---
     # NOTE: paths differ from macOS Homebrew. In your ~/.zshrc:
@@ -441,13 +442,13 @@
     antidote
 
     # --- File search & navigation (mirrors Brewfile) ---
-    fd                        # find-replacement
-    fzf                       # fuzzy finder
-    ripgrep                   # grep-replacement (rg)
-    zoxide                    # smart cd (z / zi)
-    bat                       # cat-replacement with syntax highlighting
-    eza                       # ls-replacement, used heavily in your aliases
-    tealdeer                  # `tldr` man-page summaries
+    fd # find-replacement
+    fzf # fuzzy finder
+    ripgrep # grep-replacement (rg)
+    zoxide # smart cd (z / zi)
+    bat # cat-replacement with syntax highlighting
+    eza # ls-replacement, used heavily in your aliases
+    tealdeer # `tldr` man-page summaries
     # nnn rebuilt with the O_NERD flag so it renders Nerd Font icons
     # in the file listing. This is the Nix way to flip a build-time
     # option: `.override { withNerdIcons = true; }` re-derives the
@@ -460,21 +461,21 @@
     # --- Git tools (mirrors Brewfile) ---
     git
     pre-commit
-    gh                        # GitHub CLI — auth, PR review, issue triage from terminal
+    gh # GitHub CLI — auth, PR review, issue triage from terminal
 
     # --- Downloads & media (mirrors Brewfile) ---
-    aria2                     # multi-connection downloader
-    yt-dlp                    # YouTube / video downloader
-    mpv                       # media player
+    aria2 # multi-connection downloader
+    yt-dlp # YouTube / video downloader
+    mpv # media player
 
     # --- Cloud & backup (mirrors Brewfile) ---
-    rclone                    # Cloud-storage sync (your aliases lean on this)
-    borgbackup                # Encrypted, deduplicating backups
+    rclone # Cloud-storage sync (your aliases lean on this)
+    borgbackup # Encrypted, deduplicating backups
 
     # --- Dev tooling (mirrors Brewfile) ---
-    yamllint                  # YAML linter
-    direnv                    # per-directory env loading (also enabled as program above)
-    stow                      # symlink-based dotfiles manager (you use this on macOS)
+    yamllint # YAML linter
+    direnv # per-directory env loading (also enabled as program above)
+    stow # symlink-based dotfiles manager (you use this on macOS)
 
     # --- Build essentials (you'll want these the first time you `make` anything) ---
     gcc
@@ -487,12 +488,12 @@
     # `:Mason` "just works" without surprise build failures. They're
     # also useful generally — keep, comment, or swap to per-project
     # devshells later if you prefer the cleaner approach.
-    nodejs_22                 # typescript-language-server, prettier, eslint_d, vscode-* servers
-    python3                   # pyright, ruff, debugpy, etc.
-    go                        # gopls, golangci-lint, delve
-    cargo                     # rust-analyzer (when built from source) + many Mason tools
-    rustc                     # paired with cargo
-    tree-sitter               # tree-sitter CLI — nvim-treesitter `:TSUpdate` calls this
+    nodejs_22 # typescript-language-server, prettier, eslint_d, vscode-* servers
+    python3 # pyright, ruff, debugpy, etc.
+    go # gopls, golangci-lint, delve
+    cargo # rust-analyzer (when built from source) + many Mason tools
+    rustc # paired with cargo
+    tree-sitter # tree-sitter CLI — nvim-treesitter `:TSUpdate` calls this
 
     # --- Java toolchain ----------------------------------------------
     # `jdk` is the default OpenJDK in nixpkgs (currently a recent LTS,
@@ -504,17 +505,17 @@
     # and `jshell` will all be on $PATH after a rebuild. For per-project
     # JDK pinning later, consider an `.envrc` with
     # `use_flake` + a flake providing a specific `jdkXX`.
-    jdk                       # OpenJDK (latest LTS in this channel)
-    maven                     # Maven build tool — `mvn`
-    gradle                    # Gradle build tool — `gradle`
+    jdk # OpenJDK (latest LTS in this channel)
+    maven # Maven build tool — `mvn`
+    gradle # Gradle build tool — `gradle`
     # jdt-language-server     # Eclipse JDT LSP — uncomment if you'd rather not let Mason manage it
     # google-java-format      # Java formatter
     # checkstyle              # Java linter
 
     # --- NixOS-specific helpers ---
-    nh                        # Modern wrapper for `nixos-rebuild` with diff/preview
-    nix-output-monitor        # Prettier `nix build` output (pipe with `|& nom`)
-    nvd                       # Nix version diff — show what changed between generations
+    nh # Modern wrapper for `nixos-rebuild` with diff/preview
+    nix-output-monitor # Prettier `nix build` output (pipe with `|& nom`)
+    nvd # Nix version diff — show what changed between generations
 
     # --- nixpkgs contributor toolkit ---------------------------------
     # The de-facto dev-env for working in the nixpkgs repo. Most of
@@ -532,16 +533,16 @@
     #   5. `nixfmt-rfc-style file.nix`  → official formatter (RFC 166)
     #   6. `statix check .`             → lint
     #   7. `deadnix .`                  → find unused bindings
-    nixpkgs-review            # Build + test PRs locally in a sandbox
-    nix-update                # Auto-bump version + sha256 of a package
-    nurl                      # Generate fetchFrom* expressions from URLs
-    nix-init                  # Boilerplate generator for new packages
-    nixfmt-rfc-style          # Official nixpkgs formatter (RFC 166)
-    statix                    # Lints / suggests idiomatic Nix
-    deadnix                   # Finds dead code in .nix files
-    nix-tree                  # Interactive TUI for /nix/store closures
-    nix-diff                  # Diff two derivations attribute-by-attribute
-    nil                       # Nix LSP — pair with nvim's lspconfig
+    nixpkgs-review # Build + test PRs locally in a sandbox
+    nix-update # Auto-bump version + sha256 of a package
+    nurl # Generate fetchFrom* expressions from URLs
+    nix-init # Boilerplate generator for new packages
+    nixfmt-rfc-style # Official nixpkgs formatter (RFC 166)
+    statix # Lints / suggests idiomatic Nix
+    deadnix # Finds dead code in .nix files
+    nix-tree # Interactive TUI for /nix/store closures
+    nix-diff # Diff two derivations attribute-by-attribute
+    nil # Nix LSP — pair with nvim's lspconfig
     # nixd                    # Alternative Nix LSP (richer, heavier). Pick one.
     # vulnix                  # Scans your closure for known CVEs
     # editorconfig-checker    # nixpkgs CI uses this; nice for local checks
@@ -553,25 +554,25 @@
     # `shell.nix` on top of the system-wide tools above.
 
     # --- GNOME tweakability ---
-    gnome-tweaks              # Toggle hidden GNOME settings (fonts, animations, etc.)
-    dconf-editor              # Raw GSettings registry editor — use with care
+    gnome-tweaks # Toggle hidden GNOME settings (fonts, animations, etc.)
+    dconf-editor # Raw GSettings registry editor — use with care
 
     # --- General system utilities ---
-    htop                      # Process viewer
-    btop                      # Prettier process viewer
-    unzip                     # zip extraction
+    htop # Process viewer
+    btop # Prettier process viewer
+    unzip # zip extraction
     zip
-    p7zip                     # 7z / rar handling — your `extract` function uses these
-    unrar                     # rar extraction (your `extract` function calls `unrar`)
+    p7zip # 7z / rar handling — your `extract` function uses these
+    unrar # rar extraction (your `extract` function calls `unrar`)
     curl
     wget
-    file                      # Identify file types
-    tree                      # ASCII directory tree
+    file # Identify file types
+    tree # ASCII directory tree
 
     # --- OPTIONAL: extra git tooling --------------------------------
     # Uncomment whichever you want.
     # lazygit                 # TUI git client
-    delta                     # Better git diff (set as core.pager in gitconfig)
+    delta # Better git diff (set as core.pager in gitconfig)
 
     # --- OPTIONAL: extra language toolchains -------------------------
     # node / python / go / cargo / jdk are already installed above.
@@ -585,10 +586,10 @@
     # scala                   # JVM, ditto
 
     # --- Password manager ---
-    keepassxc                 # Local KeePass-format password vault
+    keepassxc # Local KeePass-format password vault
 
     # --- Mail ---
-    thunderbird               # Mozilla email / calendar / news client
+    thunderbird # Mozilla email / calendar / news client
 
     # --- OPTIONAL: GUI apps ------------------------------------------
     # chromium
