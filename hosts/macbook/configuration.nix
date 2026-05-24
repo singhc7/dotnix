@@ -100,6 +100,7 @@
       stow # symlink-based dotfiles manager
       gh # GitHub CLI — auth, PR review, issue triage from terminal
       delta # Better git diff
+      pre-commit # Pre-commit hooks
 
       # --- Toolchains ---
       # Installed here for Mason to compile-from-source language
