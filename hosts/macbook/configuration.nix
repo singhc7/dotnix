@@ -93,7 +93,6 @@
       # --- Cloud & backup ---
       borgbackup # Encrypted, deduplicating backups
       rclone # Cloud-storage sync (your aliases lean on this)
-      syncthing
 
       # --- Dev tooling ---
       direnv # per-directory env loading
@@ -145,6 +144,18 @@
       "kitty"
       "libreoffice"
       "thunderbird"
+    ];
+
+    # Add syncthing to your brews, but use an attribute set
+    # instead of a plain string.
+    brews = [
+      {
+        name = "syncthing";
+        # Ensures that the daemon is kept alive and will only
+        # be actively restarted if a darwin-rebuild command pulls
+        # down a newer version of Syncthing.
+        restart_service = "changed";
+      }
     ];
   };
 
