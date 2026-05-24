@@ -29,10 +29,6 @@
   # Specify Lix as the underlying package manager instead of standard C++ Nix.
   nix.package = pkgs.lix;
 
-  # Enable the nix-daemon for macOS. Commented out because it is
-  # handled automatically in nix-darwin.
-  # services.nix-daemon.enable = true;
-
   # Enable flakes and the modern `nix` CLI. Required by nix-direnv,
   # `nh`, and almost every modern NixOS/darwin guide. Safe to leave on.
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -73,53 +69,99 @@
     # environment.systemPackages so any future user account on this
     # box does not get polluted with your toolkit.
     packages = with pkgs; [
-      nh # Modern wrapper for `darwin-rebuild` with diff/preview
+      # --- Editor ---
+      neovim # Your editor; kickstart config in ~/.config/nvim
 
-      # --- Downloads & media ---
+      # --- Terminal & multiplexer ---
+      tmux # Terminal multiplexer
+
+      # --- File search & navigation (mirrors NixOS) ---
+      fd # find-replacement
+      fzf # fuzzy finder
+      ripgrep # grep-replacement (rg)
+      zoxide # smart cd (z / zi)
+      bat # cat-replacement with syntax highlighting
+      eza # ls-replacement, used heavily in your aliases
+      tealdeer # `tldr` man-page summaries
+
+      # --- Git tools ---
+      git # Git version control
+      pre-commit # Pre-commit hooks
+      gh # GitHub CLI — auth, PR review, issue triage from terminal
+      delta # Better git diff
+
+      # --- Downloads & media (mirrors NixOS) ---
       aria2 # multi-connection downloader
       yt-dlp # YouTube / video downloader
       mpv # media player
       ffmpeg
 
-      # --- File search & navigation ---
-      bat # cat-replacement with syntax highlighting
-      eza # ls-replacement, used heavily in your aliases
-      fd # find-replacement
-      fzf # fuzzy finder
-      ripgrep # grep-replacement (rg)
-      zoxide # smart cd (z / zi)
-      tealdeer # `tldr` man-page summaries
-
       # --- Cloud & backup ---
-      borgbackup # Encrypted, deduplicating backups
       rclone # Cloud-storage sync (your aliases lean on this)
+      borgbackup # Encrypted, deduplicating backups
 
       # --- Dev tooling ---
-      direnv # per-directory env loading
       stow # symlink-based dotfiles manager
-      gh # GitHub CLI — auth, PR review, issue triage from terminal
-      delta # Better git diff
-      pre-commit # Pre-commit hooks
+      yamllint # YAML linter
 
-      # --- Toolchains ---
-      # Installed here for Mason to compile-from-source language
-      # servers, formatters, and linters. Pre-installing them here means
-      # `:Mason` "just works" without surprise build failures.
-      go # gopls, golangci-lint, delve
-      jdk # OpenJDK
+      # --- Build essentials (for local builds/compiling) ---
+      gnumake
+      pkg-config
+
+      # --- Mason / Neovim toolchain (mirrors NixOS) ---
       nodejs_22 # typescript-language-server, prettier, eslint_d, vscode-* servers
       python3 # pyright, ruff, debugpy, etc.
+      go # gopls, golangci-lint, delve
+      cargo # rust-analyzer (when built from source) + many Mason tools
+      rustc # paired with cargo
+      tree-sitter # tree-sitter CLI — nvim-treesitter `:TSUpdate` calls this
 
-      # --- Editor & Terminal ---
-      neovim # Your editor; kickstart config in ~/.config/nvim
-      tmux # Terminal multiplexer
+      # --- Java toolchain (mirrors NixOS) ---
+      jdk # OpenJDK (latest LTS in this channel)
+      maven # Maven build tool — `mvn`
+      gradle # Gradle build tool — `gradle`
+
+      # --- Nix-specific helpers (mirrors NixOS) ---
+      nh # Modern wrapper for `darwin-rebuild` with diff/preview
+      nix-output-monitor # Prettier `nix build` output (pipe with `|& nom`)
+      nvd # Nix version diff — show what changed between generations
+
+      # --- General system utilities ---
+      htop # Process viewer
+      btop # Prettier process viewer
+      unzip # zip extraction
+      zip
+      p7zip # 7z / rar handling — your `extract` function uses these
+      curl
+      wget
+      file # Identify file types
+      tree # ASCII directory tree
     ];
   };
+
+  # ============================================================
+  # ZSH & INTEGRATIONS
+  # ============================================================
 
   # Enable zsh system-wide. We don't turn on zsh-autosuggestions /
   # syntax-highlighting via NixOS modules because your dotfiles already
   # manage these via antidote — turning both on would double-load them.
   programs.zsh.enable = true;
+
+  # Direnv with nix-direnv. Your dotfiles already hook direnv into zsh
+  # (`eval "$(direnv hook zsh)"` in integrations.zsh), so the only thing
+  # we add here is the nix-direnv glue, which makes `use flake` and
+  # `use nix` blazing fast (cached) inside .envrc files.
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  # nix-index — fast lookup of "which package provides this binary?".
+  # Includes the `comma` (`,`) helper.
+  programs.nix-index = {
+    enable = true;
+  };
 
   # ============================================================
   # APPS / TOOLS (HOMEBREW)
