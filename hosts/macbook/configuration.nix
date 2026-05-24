@@ -138,7 +138,6 @@
 
     casks = [
       "antigravity"
-      "antigravity-cli"
       "karabiner-elements"
       "keepassxc"
       "kitty"
