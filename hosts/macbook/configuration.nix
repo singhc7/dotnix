@@ -85,7 +85,7 @@
       tealdeer # `tldr` man-page summaries
 
       # --- Git tools ---
-      git # Git version control
+      # git  It comes pre-installed with Xcode cli tools
       pre-commit # Pre-commit hooks
       gh # GitHub CLI — auth, PR review, issue triage from terminal
       delta # Better git diff
@@ -93,7 +93,7 @@
       # --- Downloads & media (mirrors NixOS) ---
       aria2 # multi-connection downloader
       yt-dlp # YouTube / video downloader
-      mpv # media player
+      # mpv  iina is preferred on Mac instead
       ffmpeg
 
       # --- Cloud & backup ---
