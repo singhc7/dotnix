@@ -20,11 +20,11 @@
 
   inputs = {
     # Pins the system to the 25.11 stable branch
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
 
     # macOS system management (pinned to match 25.11 stable)
     darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
       # Forces nix-darwin to use your nixpkgs input instead of downloading its own
       inputs.nixpkgs.follows = "nixpkgs";
     };
