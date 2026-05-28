@@ -28,9 +28,15 @@
       # Forces nix-darwin to use your nixpkgs input instead of downloading its own
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Add Home Manager input
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, darwin, ... }@inputs: {
+  outputs = { self, nixpkgs, darwin, home-manager, ... }@inputs: {
 
     # ============================================================
     # LINUX (NixOS)
@@ -46,14 +52,16 @@
     };
 
     # ============================================================
-    # LINUX (oci)
+    # UBUNTU (Standalone Home Manager on OCI)
     # ============================================================
-    # Build with: nh os switch
-    nixosConfigurations."oci" = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
+    # Build with: home-manager switch --flake .#ubuntu
+    homeConfigurations."ubuntu" = home-manager.lib.homeManagerConfiguration {
+      # Pass the architecture of your OCI (aarch64 for ARM, x86_64 for AMD/Intel)
+      pkgs = nixpkgs.legacyPackages."aarch64-linux";
+      # Optional: Pass inputs to modules if you need them
+      extraSpecialArgs = { inherit inputs; };
       modules = [
-        # Updated to reflect the new host-based directory structure
-        ./hosts/oci/configuration.nix
+        ./hosts/oci/home.nix
       ];
     };
 
