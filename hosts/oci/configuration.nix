@@ -1,0 +1,184 @@
+# dotnix — nix-oci configuration for an Apple Silicon Mac
+# Copyright (C) 2026  Chahatpreet Singh <c@chahat.dev>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public
+# License along with this program. If not, see
+# <https://www.gnu.org/licenses/>.
+
+# Edit this configuration file to define what should be installed on
+# your system. Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
+{ config, pkgs, ... }:
+
+{
+  # ============================================================
+  # NIX (the package manager itself)
+  # ============================================================
+
+  # --- Lix (macOS Specific) -------------------------------------------
+  # Specify Lix as the underlying package manager instead of standard C++ Nix.
+  nix.package = pkgs.lix;
+
+  # Enable flakes and the modern `nix` CLI. Required by nix-direnv,
+  # `nh`, and almost every modern NixOS/darwin guide. Safe to leave on.
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # Hard-link identical files in /nix/store to save disk space. Tiny
+  # build-time cost, big space savings over months of system updates.
+  nix.settings.auto-optimise-store = true;
+
+  # Automatic garbage collection. Without this, /nix/store grows
+  # forever. Runs weekly, removes profile generations older than 14
+  # days that aren't referenced by your active system. If you want a
+  # bigger rollback window, change "14d" → "30d" or "90d".
+  nix.gc = {
+    automatic = true;
+    interval = { Weekday = 0; Hour = 0; Minute = 0; }; # darwin equivalent to "weekly"
+    options = "--delete-older-than 14d";
+  };
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  # ============================================================
+  # USERS
+  # ============================================================
+  # Define a user account.
+  users.users.ubuntu = {
+    name = "ubuntu";
+    home = "/home/ubuntu";
+    description = "Chahatpreet Singh OCI";
+
+    # Make zsh the login shell. The dotfiles in ~/dotfiles/zsh expect
+    # this. `programs.zsh.enable` below registers zsh as a valid login
+    # shell so chsh / this option won't fail validation.
+    shell = pkgs.zsh;
+
+    # Per-user packages go here. Because this is a shared macOS
+    # machine, we intentionally install everything here instead of
+    # environment.systemPackages so any future user account on this
+    # box does not get polluted with your toolkit.
+    packages = with pkgs; [
+      # --- Editor ---
+      neovim # Your editor; kickstart config in ~/.config/nvim
+
+      # --- Terminal & multiplexer ---
+      tmux # Terminal multiplexer
+
+      # --- File search & navigation (mirrors NixOS) ---
+      fd # find-replacement
+      fzf # fuzzy finder
+      ripgrep # grep-replacement (rg)
+      zoxide # smart cd (z / zi)
+      bat # cat-replacement with syntax highlighting
+      eza # ls-replacement, used heavily in your aliases
+      tealdeer # `tldr` man-page summaries
+
+      # --- Git tools ---
+      # git  It comes pre-installed with Xcode cli tools
+      pre-commit # Pre-commit hooks
+      gh # GitHub CLI — auth, PR review, issue triage from terminal
+      delta # Better git diff
+
+      # --- Cloud & backup ---
+      rclone # Cloud-storage sync (your aliases lean on this)
+      borgbackup # Encrypted, deduplicating backups
+      syncthing # Continous encrypted sync between devices
+
+      # --- Dev tooling ---
+      stow # symlink-based dotfiles manager
+      yamllint # YAML linter
+
+      # --- Build essentials (for local builds/compiling) ---
+      gnumake
+      pkg-config
+
+      # --- Mason / Neovim toolchain (mirrors NixOS) ---
+      nodejs_22 # typescript-language-server, prettier, eslint_d, vscode-* servers
+      python3 # pyright, ruff, debugpy, etc.
+      go # gopls, golangci-lint, delve
+      cargo # rust-analyzer (when built from source) + many Mason tools
+      rustc # paired with cargo
+      tree-sitter # tree-sitter CLI — nvim-treesitter `:TSUpdate` calls this
+
+      # --- Java toolchain (mirrors NixOS) ---
+      jdk # OpenJDK (latest LTS in this channel)
+      maven # Maven build tool — `mvn`
+      gradle # Gradle build tool — `gradle`
+
+      # --- Nix-specific helpers (mirrors NixOS) ---
+      nh # Modern wrapper for `darwin-rebuild` with diff/preview
+      nix-output-monitor # Prettier `nix build` output (pipe with `|& nom`)
+      nvd # Nix version diff — show what changed between generations
+
+      # --- General system utilities ---
+      htop # Process viewer
+      btop # Prettier process viewer
+      unzip # zip extraction
+      zip
+      p7zip # 7z / rar handling — your `extract` function uses these
+      curl
+      wget
+      file # Identify file types
+      tree # ASCII directory tree
+    ];
+  };
+
+  # ============================================================
+  # ZSH & INTEGRATIONS
+  # ============================================================
+
+  # Enable zsh system-wide. We don't turn on zsh-autosuggestions /
+  # syntax-highlighting via NixOS modules because your dotfiles already
+  # manage these via antidote — turning both on would double-load them.
+  programs.zsh.enable = true;
+
+  # Direnv with nix-direnv. Your dotfiles already hook direnv into zsh
+  # (`eval "$(direnv hook zsh)"` in integrations.zsh), so the only thing
+  # we add here is the nix-direnv glue, which makes `use flake` and
+  # `use nix` blazing fast (cached) inside .envrc files.
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  # nix-index — fast lookup of "which package provides this binary?".
+  # Includes the `comma` (`,`) helper.
+  programs.nix-index = {
+    enable = true;
+  };
+
+  # ============================================================
+  # FONTS
+  # ============================================================
+  # Your kitty + Powerlevel10k config rely on Nerd Font glyphs (the
+  # icons you see in eza, p10k segments, devicons in nvim). Without
+  # these you get tofu/squares. JetBrainsMono is the "main" font; the
+  # rest cover Unicode coverage gaps (CJK, emoji).
+  #  fonts.packages = with pkgs; [
+  #  nerd-fonts.jetbrains-mono # Primary terminal font
+  #  nerd-fonts.fira-code # Backup, in case you switch
+  # noto-fonts # Broad Unicode coverage
+  #  noto-fonts-cjk-sans # Chinese / Japanese / Korean
+  #  noto-fonts-color-emoji # Color emoji
+  #];
+
+  # ============================================================
+  # SYSTEM SETTINGS
+  # ============================================================
+  # This value determines the nix-oci release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  system.stateVersion = 25.11; # equivalent to NixOS stateVersion
+}
