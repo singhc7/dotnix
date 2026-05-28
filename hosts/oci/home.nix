@@ -22,6 +22,14 @@
     bat
     eza
     tealdeer
+    # nnn rebuilt with the O_NERD flag so it renders Nerd Font icons
+    # in the file listing. This is the Nix way to flip a build-time
+    # option: `.override { withNerdIcons = true; }` re-derives the
+    # package with that flag set. Other available toggles include
+    # `withIcons` (emoji icons) and `withPcre` (PCRE regex). Your
+    # zsh integration (`n()` function, NNN_PLUG, NNN_FCOLORS, etc.)
+    # all work the same with this build.
+    (nnn.override { withNerdIcons = true; })
 
     # --- Git tools ---
     pre-commit
