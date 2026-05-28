@@ -46,6 +46,18 @@
     };
 
     # ============================================================
+    # LINUX (oci)
+    # ============================================================
+    # Build with: nh os switch
+    nixosConfigurations."oci" = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
+      modules = [
+        # Updated to reflect the new host-based directory structure
+        ./hosts/oci/configuration.nix
+      ];
+    };
+
+    # ============================================================
     # macOS (nix-darwin)
     # ============================================================
     # Build with: nh darwin switch
