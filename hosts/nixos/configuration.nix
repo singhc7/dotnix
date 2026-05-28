@@ -15,54 +15,53 @@
 # License along with this program.  If not, see
 # <https://www.gnu.org/licenses/>.
 
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# My main NixOS configuration file where I define my laptop setup.
+# I can check the configuration.nix(5) man page or run `nixos-help` if I get stuck.
 
 { config, pkgs, ... }:
 
 {
   imports =
     [
-      # Include the results of the hardware scan.
+      # I need to import the hardware configuration generated for this laptop.
       ./hardware-configuration.nix
     ];
 
   # ============================================================
   # BOOTLOADER
   # ============================================================
-  # Bootloader.
+  # I'm using systemd-boot as my bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Keep at most 10 generations in the systemd-boot menu so it stays
-  # readable. Older generations still exist on disk for rollback until
-  # the GC sweep below removes them. Bump this if you want more entries
-  # visible at boot; lower it for a tidier menu.
+  # I'll keep at most 10 generations in the systemd-boot menu so it stays
+  # readable. My older generations will still exist on disk for rollbacks
+  # until I run the garbage collector. I can bump this if I want more entries,
+  # or lower it to tidy up the boot menu.
   boot.loader.systemd-boot.configurationLimit = 10;
 
   # --- Latest mainline kernel (OPTIONAL) -------------------------------
-  # Uncomment to enable: pulls the newest mainline Linux kernel for
-  # fresher hardware support (recent Wi-Fi chips, GPUs, laptop sensors).
-  # Default is the LTS kernel — usually fine. Only flip this on if you
-  # have a hardware reason; newer kernels occasionally break drivers.
+  # I can uncomment this if I need the absolute newest mainline Linux kernel
+  # for fresher hardware support (like newer Wi-Fi chips, GPUs, or laptop sensors).
+  # The default is the LTS kernel, which is usually fine for me. I should only
+  # enable this if I have a specific hardware reason, since newer kernels can break.
   # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # ============================================================
   # NIX (the package manager itself)
   # ============================================================
-  # Enable flakes and the modern `nix` CLI. Required by nix-direnv,
-  # `nh`, and almost every modern NixOS guide. Safe to leave on.
+  # I'm enabling flakes and the modern `nix` CLI. I need this for nix-direnv,
+  # `nh`, and pretty much every modern NixOS guide I follow. Definitely safe to leave on.
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Hard-link identical files in /nix/store to save disk space. Tiny
-  # build-time cost, big space savings over months of system updates.
+  # I want to hard-link identical files in my /nix/store to save precious disk space.
+  # It has a tiny build-time overhead, but the space savings over months of updates are huge.
   nix.settings.auto-optimise-store = true;
 
-  # Automatic garbage collection. Without this, /nix/store grows
-  # forever. Runs weekly, removes profile generations older than 14
-  # days that aren't referenced by your active system. If you want a
-  # bigger rollback window, change "14d" → "30d" or "90d".
+  # I need automatic garbage collection, otherwise my /nix/store will grow
+  # forever. I'll configure it to run weekly and wipe out profile generations
+  # older than 14 days that my active system isn't referencing. If I need a
+  # bigger rollback safety net, I can change "14d" to "30d" or "90d".
   nix.gc = {
     automatic = true;
     dates = "weekly";
@@ -70,117 +69,116 @@
   };
 
   # --- Channel / package source (STABLE) -------------------------------
-  # `pkgs` in this file resolves to whatever the `nixos` channel points
-  # at. A fresh 25.11 install already pins it to the stable 25.11
-  # branch — i.e. the same release line as `system.stateVersion` at the
-  # bottom of this file — so packages are pulled from
-  # https://nixos.org/channels/nixos-25.11 (stable), NOT nixos-unstable.
+  # My `pkgs` here resolves to whatever my local `nixos` channel is tracking.
+  # Since I've upgraded my flake inputs to 26.05, my packages now pull from the
+  # stable 26.05 branch, matching my inputs. If I were still using legacy channels,
+  # I'd expect my channel to point to https://nixos.org/channels/nixos-26.05.
   #
-  # Verify any time with:
+  # I can verify channels any time with:
   #     sudo nix-channel --list
   # Expected:
-  #     nixos https://nixos.org/channels/nixos-25.11
+  #     nixos https://nixos.org/channels/nixos-26.05
   #
-  # If something is wrong (e.g. someone added unstable), fix with:
+  # If it gets messed up (like if I accidentally tracked unstable), I can fix it with:
   #     sudo nix-channel --remove nixos
-  #     sudo nix-channel --add https://nixos.org/channels/nixos-25.11 nixos
+  #     sudo nix-channel --add https://nixos.org/channels/nixos-26.05 nixos
   #     sudo nix-channel --update
   #     sudo nixos-rebuild switch
   #
-  # When 26.05 ships and you're ready to upgrade, swap "25.11" for
-  # "26.05" in the URL above AND in `system.stateVersion` at the bottom.
-  # Stay one release behind unstable on purpose — it's the whole point
-  # of running stable.
+  # Now that 26.05 is active, I've updated my flake to point to the 26.05 release.
+  # I'm keeping my system.stateVersion at "25.11" (since that's what it was when
+  # I first installed), but my packages are happily on 26.05.
 
   # ============================================================
   # NETWORKING
   # ============================================================
-  networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.hostName = "nixos"; # I'll set my hostname to "nixos".
+  # networking.wireless.enable = true;  # I can uncomment this if I need wireless support via wpa_supplicant.
 
-  # Configure network proxy if necessary
+  # I can configure a network proxy here if I ever find myself behind one:
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
+  # I need NetworkManager enabled for easy Wi-Fi and ethernet management.
   networking.networkmanager.enable = true;
 
   # --- Tailscale (OPTIONAL) --------------------------------------------
-  # Uncomment to enable: drop-in mesh VPN, lets you reach this laptop
-  # from any other device you own without dealing with port forwarding.
-  # After enabling and rebuilding, run `sudo tailscale up` once to log in.
+  # I can uncomment this to enable Tailscale: a drop-in mesh VPN that lets me
+  # reach this laptop from my other devices without fiddling with port forwarding.
+  # Once enabled and rebuilt, I'll need to run `sudo tailscale up` to log in.
   # services.tailscale.enable = true;
 
   # --- Avahi / mDNS (OPTIONAL) -----------------------------------------
-  # Uncomment to enable: lets `.local` hostnames resolve on your LAN
-  # (e.g. `ssh laptop.local`). Useful if you have other Linux/macOS
-  # boxes around. Harmless on home networks; some corp networks block it.
+  # I can enable this to let `.local` hostnames resolve on my LAN (for example,
+  # so I can run `ssh laptop.local`). Handy since I have other Linux/macOS boxes.
+  # It's totally harmless on my home network, though some corporate networks block it.
   # services.avahi = {
   #   enable = true;
   #   nssmdns4 = true;
   #   openFirewall = true;
   # };
 
-  # Set your time zone.
+  # I'll set my time zone to Winnipeg.
   time.timeZone = "America/Winnipeg";
 
-  # Select internationalisation properties.
+  # I'll stick with Canadian English for my default locale settings.
   i18n.defaultLocale = "en_CA.UTF-8";
 
   # ============================================================
   # DESKTOP — X11 / GNOME
   # ============================================================
-  # Enable the X11 windowing system.
+  # I need to enable the X11 windowing system so GNOME can start.
   services.xserver.enable = true;
 
-  # Enable the GNOME Desktop Environment.
-  # NOTE: as of nixos-25.11 the display- and desktop-manager options
-  # moved out from under `services.xserver.*` to top-level
-  # `services.displayManager.*` / `services.desktopManager.*` since
-  # they're no longer X11-specific (Wayland uses them too). The old
-  # paths still evaluate but emit a deprecation warning.
+  # I want to use GNOME as my desktop environment.
+  # Note to self: ever since NixOS 25.11, display- and desktop-manager options
+  # moved out from under `services.xserver.*` to the top-level
+  # `services.displayManager.*` and `services.desktopManager.*` since they're
+  # no longer strictly X11-specific (Wayland uses them too). The old paths
+  # would still work but they spit out deprecation warnings that I want to avoid.
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
   # --- Strip GNOME bloat -----------------------------------------------
-  # GNOME ships a lot of default apps most people never use. We exclude
-  # them so they don't clutter the app grid or the installation closure.
-  # Re-add anything you actually want by deleting it from this list.
+  # GNOME ships with a bunch of default apps I'm never going to use. I'm excluding
+  # them here so they don't clutter my app grid or bloat my nix store closure.
+  # If I ever need one of these back, I can just delete it from this list.
   environment.gnome.excludePackages = (with pkgs; [
-    gnome-tour # First-run tutorial slideshow
-    gnome-connections # RDP/VNC client
-    epiphany # GNOME Web browser (we use Firefox)
-    geary # Email client
-    totem # Video player (we use mpv)
-    yelp # GNOME help viewer
-    gnome-music # Music player
-    gnome-contacts # Contacts app
-    gnome-maps # Maps app
-    gnome-weather # Weather widget
-    gnome-clocks # Clocks app (timer/world clock)
-    simple-scan # Scanner front-end
-    cheese # Webcam toy
+    gnome-tour # I don't need a first-run tutorial slideshow
+    gnome-connections # I don't use this RDP/VNC client
+    epiphany # I use Firefox instead of this GNOME Web browser
+    geary # I don't need this email client
+    totem # I use mpv for video playing
+    yelp # I don't need the GNOME help viewer
+    gnome-music # I don't use the GNOME music player
+    gnome-contacts # I don't need a contacts manager here
+    gnome-maps # I don't need GNOME Maps on my laptop
+    gnome-weather # I don't need this weather widget
+    gnome-clocks # I don't need this clock/timer app
+    simple-scan # I don't have a scanner hooked up
+    cheese # I don't need the webcam toy
   ]);
 
-  # GNOME ships its own power daemon. We disable it because we use TLP
-  # below for finer laptop power control. The two daemons conflict; pick
-  # one. If you'd rather use GNOME's built-in (less aggressive) one,
-  # disable the TLP block below and flip this back to `true`.
+  # GNOME ships its own power daemon, but I'm disabling it because I use TLP
+  # below to get much better control over my laptop's battery life. The two
+  # daemons conflict, so I have to pick one. If I ever decide to go back to
+  # GNOME's built-in power-profiles-daemon, I'll turn off my TLP config below
+  # and flip this to true.
   services.power-profiles-daemon.enable = false;
 
-  # Configure keymap in X11
+  # I'll stick to a standard US keyboard layout for X11.
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
 
-  # Enable CUPS to print documents.
+  # I want to enable CUPS so I can print documents when I need to.
   services.printing.enable = true;
 
   # ============================================================
   # AUDIO — PipeWire
   # ============================================================
-  # Enable sound with pipewire.
+  # I'm setting up my audio using PipeWire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -188,207 +186,187 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
+    # I can uncomment this if I ever need to run JACK audio applications
     #jack.enable = true;
 
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
+    # I don't need to specify a session manager since WirePlumber is standard now and
+    # handles everything out of the box.
     #media-session.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
+  # I don't need to explicitly enable touchpad support since GNOME enables it by default.
   # services.xserver.libinput.enable = true;
 
   # ============================================================
   # BLUETOOTH
   # ============================================================
-  # Stock NixOS doesn't enable Bluetooth. We do, since this is a
-  # laptop. powerOnBoot brings the radio up after a cold boot so
-  # devices reconnect without manual steps. GNOME's Settings panel
-  # picks this up automatically — no extra UI needed.
+  # Stock NixOS leaves Bluetooth disabled, but I'm turning it on because this is a
+  # laptop. I'll use `powerOnBoot` to bring the radio up automatically on boot so
+  # my devices reconnect without me having to manually click anything. GNOME's settings
+  # panel will show it automatically.
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 
   # --- Blueman tray applet (OPTIONAL) ----------------------------------
-  # Uncomment to enable: standalone Bluetooth tray. Only useful if you
-  # ever leave GNOME for a tiling WM (Sway/Hyprland) — GNOME has its
-  # own Bluetooth UI built in.
+  # I can uncomment this to get the Blueman tray applet, but it's only really
+  # useful if I ever switch away from GNOME to a tiling window manager (like Sway/Hyprland)
+  # since GNOME already has a great Bluetooth UI built right into its panel.
   # services.blueman.enable = true;
 
   # ============================================================
   # LAPTOP POWER MANAGEMENT — TLP
   # ============================================================
-  # TLP is the de-facto laptop power tool: spins down disks, manages
-  # CPU governors, sets battery charge thresholds, etc. Sensible
-  # defaults out of the box. The settings below are conservative —
-  # tweak `START_CHARGE_THRESH_BAT0` / `STOP_CHARGE_THRESH_BAT0` if
-  # your laptop supports charge limits (mostly ThinkPads, some Dells).
+  # I'm using TLP to manage my laptop's power settings (spinning down disks, CPU scaling governors,
+  # battery charge thresholds, etc.). It gives me great defaults right out of the box.
+  # The configuration below is relatively conservative — I'd tweak the start/stop charge thresholds
+  # if my battery hardware supported it (mostly a ThinkPad/Dell thing).
   services.tlp = {
     enable = true;
     settings = {
-      # CPU scaling governor — performance when plugged in, powersave on battery.
+      # I want maximum performance when I'm plugged in, and powersave mode when on battery.
       CPU_SCALING_GOVERNOR_ON_AC = "performance";
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
-      # Energy-performance preference (Intel/AMD modern CPUs).
+      # Energy-performance preference for my AMD CPU.
       CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
       CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
 
-      # Battery charge thresholds (ThinkPad-style hardware only — others ignore these).
-      # Uncomment if your laptop supports it; longevity > capacity if you're plugged in often.
+      # Battery charge thresholds (only works on ThinkPad-style hardware; others ignore it).
+      # I can uncomment these if I want to limit charging to extend battery lifespan.
       # START_CHARGE_THRESH_BAT0 = 75;
       # STOP_CHARGE_THRESH_BAT0  = 80;
     };
   };
 
   # --- auto-cpufreq alternative (OPTIONAL) -----------------------------
-  # Uncomment to enable: a simpler, more reactive alternative to TLP
-  # focused only on CPU scaling. If you flip this on, disable TLP above.
+  # I can uncomment this if I want to try auto-cpufreq instead of TLP. It's
+  # more reactive and focuses on CPU scaling. If I use it, I'll need to disable TLP.
   # services.auto-cpufreq.enable = true;
 
   # ============================================================
   # SYSTEM RELIABILITY / PERFORMANCE
   # ============================================================
-  # Compressed in-RAM swap. Treats a chunk of RAM as compressed swap
-  # before falling back to disk. Big quality-of-life win for dev boxes:
-  # browser tabs / language servers can swap without thrashing the SSD.
+  # I'll set up compressed in-RAM swap using zram. It treats a chunk of my RAM as
+  # compressed swap before hitting my SSD. This is a huge win for my dev workflow
+  # because heavy browser tabs and LSP servers can swap without grinding my SSD.
   zramSwap = {
     enable = true;
     algorithm = "zstd";
     memoryPercent = 50;
   };
 
-  # Out-of-memory daemon. Kills the worst-offending process when memory
-  # pressure spikes, instead of letting the whole system freeze.
-  # NixOS enables this by default with systemd ≥ 247, but we set it
-  # explicitly so it's obvious what's going on.
+  # I'm explicitly enabling systemd-oomd to kill runaway processes when my memory
+  # pressure spikes, rather than letting the entire system lock up. NixOS turns it
+  # on by default anyway, but I like having it explicitly written down here.
   systemd.oomd.enable = true;
 
-  # Periodic SSD trim. Tells the SSD which blocks are free so it can
-  # garbage-collect internally. Runs weekly via systemd timer.
+  # I'll enable fstrim to run weekly via a systemd timer. This tells my SSD
+  # which blocks are free so it can run its internal garbage collection and stay fast.
   services.fstrim.enable = true;
 
   # ============================================================
   # USERS
   # ============================================================
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # Setting up my main user account. I need to make sure I run `passwd` to set my password.
   users.users.chahat = {
     isNormalUser = true;
     description = "Chahatpreet Singh";
-    # `video` lets us control screen brightness without sudo.
-    # Add "docker" / "libvirtd" here later if you enable those below.
+    # Adding my user to `video` so I can adjust screen brightness without needing sudo.
+    # I'll need to add "docker" or "libvirtd" here later if I enable those services.
     extraGroups = [ "networkmanager" "wheel" "video" ];
 
-    # Make zsh the login shell. The dotfiles in ~/dotfiles/zsh expect
-    # this. `programs.zsh.enable` below registers zsh as a valid login
-    # shell so chsh / this option won't fail validation.
+    # I want zsh to be my default login shell since my dotfiles in ~/dotfiles/zsh expect it.
+    # Enabling `programs.zsh.enable` below registers it so this setting is validated.
     shell = pkgs.zsh;
 
-    # Per-user packages go here. This list is empty on purpose —
-    # everything is installed in environment.systemPackages above so
-    # any future user account on this box gets the same toolkit. Move
-    # apps here if you ever want them visible only to chahat (e.g. a
-    # personal license-bound app you don't want exposed to a guest
-    # account).
+    # I'll keep this per-user packages list empty on purpose. I prefer installing
+    # packages system-wide in `environment.systemPackages` below so that any other user
+    # account I create gets the exact same tools. I'd only put things here if they were
+    # private or license-restricted to my user alone.
     packages = with pkgs; [
     ];
   };
 
-  # Enable zsh system-wide. We don't turn on zsh-autosuggestions /
-  # syntax-highlighting via NixOS modules because your dotfiles already
-  # manage these via antidote — turning both on would double-load them.
+  # I'm enabling zsh system-wide. I'm deliberately NOT using the NixOS modules for
+  # zsh-autosuggestions or syntax-highlighting because my dotfiles manage these via
+  # antidote — double-loading them would just slow down my shell startup.
   programs.zsh.enable = true;
 
   # ============================================================
   # APPS / TOOLS
   # ============================================================
-  # Install firefox.
+  # Firefox is my primary web browser, so I'll enable it here.
   programs.firefox.enable = true;
 
-  # Direnv with nix-direnv. Your dotfiles already hook direnv into zsh
-  # (`eval "$(direnv hook zsh)"` in integrations.zsh), so the only thing
-  # we add here is the nix-direnv glue, which makes `use flake` and
-  # `use nix` blazing fast (cached) inside .envrc files.
+  # I'm setting up direnv with nix-direnv. Since my dotfiles already source the direnv hook
+  # in my zsh configuration (`eval "$(direnv hook zsh)"`), I just need this nix-direnv glue
+  # to cache environments so `use flake` and `use nix` are blazing fast when I cd into projects.
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
   };
 
-  # nix-index — fast lookup of "which package provides this binary?".
-  # Includes the `comma` (`,`) helper: `, cowsay hi` runs cowsay
-  # without installing it. Also drops in a command-not-found hook for
-  # zsh that suggests the right `nix-shell` invocation when you type a
-  # missing command. We disable the legacy command-not-found below so
-  # they don't both run.
+  # I'm enabling nix-index to quickly find which package provides a given command.
+  # This gives me the comma (`,`) helper (e.g. I can run `, cowsay hi` to run it instantly).
+  # It also hooks into my shell to suggest packages when I type a command that isn't installed.
+  # I'll disable the legacy command-not-found service below so they don't fight.
   programs.nix-index = {
     enable = true;
     enableZshIntegration = true;
   };
   programs.command-not-found.enable = false;
 
-  # SSH agent. Your gitconfig signs commits with an SSH key
-  # (gpg.format = ssh, signingkey = ~/.ssh/id_ed25519), so an agent
-  # needs to be running for passphrase-protected keys.
+  # My git config signs commits using my SSH key (signingkey = ~/.ssh/id_ed25519),
+  # so I need an SSH agent running to manage my passphrase-protected keys.
   #
-  # On GNOME we DO NOT enable `programs.ssh.startAgent` — GNOME 47+ ships
-  # `services.gnome.gcr-ssh-agent` (enabled by default with the GNOME
-  # module) which is a keyring-backed SSH agent. The two conflict at
-  # eval time ("only one ssh agent can be installed at a time"), so we
-  # let the GNOME default win. `gcr-ssh-agent` exports SSH_AUTH_SOCK
-  # automatically; just run `ssh-add` once and the GNOME keyring will
-  # remember the passphrase across sessions (unlocked by your login).
+  # On GNOME I DO NOT want to enable `programs.ssh.startAgent`. GNOME 47+ ships
+  # `services.gnome.gcr-ssh-agent` (enabled automatically with GNOME), which is a
+  # keyring-backed SSH agent. If I enable both, NixOS will throw an evaluation error
+  # because they conflict. Let's let the GNOME default win. I'll just run `ssh-add`
+  # once and the GNOME keyring will remember my passphrase and unlock it when I log in.
   #
-  # If you ever switch off GNOME, flip this on and you're back to the
-  # plain OpenSSH agent:
+  # If I ever move off GNOME, I'll need to uncomment the plain OpenSSH agent:
   # programs.ssh.startAgent = true;
   #
-  # NOTE: your dotfiles' integrations.zsh contains
-  # `ssh-add --apple-load-keychain`, which is macOS-only — on NixOS just
-  # run `ssh-add` once and the keyring takes it from there.
+  # Note to self: my dotfiles contain `ssh-add --apple-load-keychain`, which is macOS-only.
+  # Here on NixOS, I just run `ssh-add` once and the keyring handles the rest.
 
   # ============================================================
   # NEOVIM / MASON SUPPORT
   # ============================================================
-  # Mason (the LSP/DAP/linter installer your kickstart nvim uses) has
-  # two failure modes on NixOS that don't exist on macOS:
+  # Mason (the LSP/DAP/linter installer for my kickstart Neovim setup) has two major
+  # pain points on NixOS that I don't have to deal with on macOS:
   #
-  # 1. Mason often downloads PREBUILT binaries (e.g. lua-language-server,
-  #    rust-analyzer, eslint_d). These are linked against a normal FHS
-  #    glibc that doesn't exist in NixOS, so they fail with
-  #    "no such file or directory" even though the file is right there.
-  #    `programs.nix-ld` provides a shim ld-linux at /lib64/ld-linux-*
-  #    so those binaries can find their loader. The `libraries` list
-  #    is what nix-ld preloads — add more if a Mason binary complains
-  #    about a missing .so at runtime.
+  # 1. Mason downloads prebuilt binaries that expect a standard FHS glibc. They fail
+  #    with "no such file or directory" on NixOS because the loader path is different.
+  #    I use `programs.nix-ld` to provide a shim at /lib64/ld-linux-* so these binaries
+  #    can run. If a server complains about a missing library, I'll add it to the list here.
   #
-  # 2. Mason ALSO compiles some servers from source. Those need the
-  #    appropriate toolchain on $PATH (node/python/go/cargo). We
-  #    install those globally further down, in systemPackages.
+  # 2. Mason also builds some servers from source, meaning I need node/python/go/cargo on
+  #    my $PATH. I've installed these globally in my `systemPackages` below.
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
-      stdenv.cc.cc.lib # libstdc++ — needed by lots of Mason binaries
-      zlib # compression — pulled in by nearly everything
-      openssl # TLS — needed by anything that talks to a registry
-      curl # libcurl
-      icu # Unicode — used by some language servers
+      stdenv.cc.cc.lib # libstdc++ — I need this for a lot of Mason language servers
+      zlib # Compression library — required by almost everything
+      openssl # TLS support — needed by servers that talk to online registries
+      curl # I need libcurl for networking tools
+      icu # Unicode libraries — used by some language servers
       libxml2
-      libsecret # Required for google antigravity's keyring auth fallback
+      libsecret # Required for my Antigravity keyring auth fallback
       glib
     ];
   };
 
   # --- GnuPG agent (OPTIONAL) ------------------------------------------
-  # Uncomment to enable: only useful if you actually use GPG (encrypted
-  # email, package signing, etc). You sign git commits with SSH, not
-  # GPG, so this is off by default.
+  # I can enable this if I ever start using GPG keys for encrypted emails or
+  # package signing. Since I sign all my git commits with SSH instead, I can leave this off.
   # programs.gnupg.agent = {
   #   enable = true;
   #   enableSSHSupport = true;
   # };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
+  # I can enable SUID wrappers or start user agents here if needed:
   # programs.mtr.enable = true;
   # programs.gnupg.agent = {
   #   enable = true;
@@ -398,70 +376,60 @@
   # ============================================================
   # FONTS
   # ============================================================
-  # Your kitty + Powerlevel10k config rely on Nerd Font glyphs (the
-  # icons you see in eza, p10k segments, devicons in nvim). Without
-  # these you get tofu/squares. JetBrainsMono is the "main" font; the
-  # rest cover Unicode coverage gaps (CJK, emoji).
+  # My Kitty and Powerlevel10k configs rely heavily on Nerd Font icons (used by eza, p10k,
+  # and devicons in Neovim). Without these, I'll get broken tofu boxes. JetBrainsMono is
+  # my main font, and I'll add Noto fonts to cover CJK and emojis.
   fonts.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono # Primary terminal font
-    nerd-fonts.fira-code # Backup, in case you switch
+    nerd-fonts.jetbrains-mono # My primary terminal font
+    nerd-fonts.fira-code # My backup font, in case I want to swap
     noto-fonts # Broad Unicode coverage
-    noto-fonts-cjk-sans # Chinese / Japanese / Korean
-    noto-fonts-color-emoji # Color emoji (renamed from noto-fonts-emoji in 25.11)
+    noto-fonts-cjk-sans # Support for CJK characters
+    noto-fonts-color-emoji # Color emojis (NixOS renamed this in 25.11)
   ];
 
-  # Allow unfree packages
+  # I need to allow unfree packages so I can install proprietary software.
   nixpkgs.config.allowUnfree = true;
 
   # ============================================================
   # SYSTEM PACKAGES
   # ============================================================
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  #
-  # This block is the NixOS equivalent of your ~/dotfiles/Brewfile,
-  # plus a handful of NixOS-specific quality-of-life additions.
-  # Anything you DON'T want, just delete the line. Anything new you
-  # want, add it under the relevant heading.
+  # These are my system-wide packages. To find new ones, I can run `nix search wget`.
+  # This block acts as the NixOS equivalent of my macOS Brewfile, along with some
+  # handy NixOS-specific utility programs.
   environment.systemPackages = with pkgs; [
-    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    # I should ensure I have an editor installed so I don't lock myself out of configuration edits.
     #  wget
 
     # --- Editor ---
-    neovim # Your editor; kickstart config in ~/.config/nvim
+    neovim # My main editor, configured via kickstart in ~/.config/nvim
 
     # --- Terminal & multiplexer ---
-    kitty # Primary terminal emulator
-    tmux # Terminal multiplexer
+    kitty # My primary terminal emulator
+    tmux # Terminal multiplexer for managing sessions
 
     # --- Shell prompt + plugin manager ---
-    # NOTE: paths differ from macOS Homebrew. In your ~/.zshrc:
-    #   - antidote lives at /run/current-system/sw/share/antidote/antidote.zsh
-    #     (your line `source ~/.antidote/antidote.zsh` won't work on NixOS)
-    #   - powerlevel10k is built by antidote, no need for it to be built by this config
+    # Note to self: Nix paths differ from macOS. In my ~/.zshrc, I must handle:
+    #   - antidote path: `/run/current-system/sw/share/antidote/antidote.zsh`
+    #     (my macOS source line won't work here on Linux)
+    #   - powerlevel10k is handled by antidote, so I don't need it built here
     antidote
 
-    # --- File search & navigation (mirrors Brewfile) ---
-    fd # find-replacement
-    fzf # fuzzy finder
-    ripgrep # grep-replacement (rg)
-    zoxide # smart cd (z / zi)
-    bat # cat-replacement with syntax highlighting
-    eza # ls-replacement, used heavily in your aliases
-    tealdeer # `tldr` man-page summaries
-    # nnn rebuilt with the O_NERD flag so it renders Nerd Font icons
-    # in the file listing. This is the Nix way to flip a build-time
-    # option: `.override { withNerdIcons = true; }` re-derives the
-    # package with that flag set. Other available toggles include
-    # `withIcons` (emoji icons) and `withPcre` (PCRE regex). Your
-    # zsh integration (`n()` function, NNN_PLUG, NNN_FCOLORS, etc.)
-    # all work the same with this build.
+    # --- File search & navigation (mirrors my macOS Brewfile) ---
+    fd # Fast search replacement for `find`
+    fzf # Fuzzy finder for history and files
+    ripgrep # High-speed search tool (`rg`)
+    zoxide # Smart cd helper (`z`)
+    bat # Better cat with syntax highlighting
+    eza # Modern replacement for `ls` that my aliases depend on
+    tealdeer # Rust-based client for tldr man page summaries
+    # Rebuilding `nnn` with nerd icons. Using the Nix `.override` function is how I customize
+    # compile-time flags like `withNerdIcons = true` to make it render icons properly.
     (nnn.override { withNerdIcons = true; })
 
     # --- Git tools (mirrors Brewfile) ---
     git
     pre-commit
-    gh # GitHub CLI — auth, PR review, issue triage from terminal
+    gh # GitHub CLI for managing PRs and issues from my terminal
 
     # --- Downloads & media (mirrors Brewfile) ---
     aria2 # multi-connection downloader
@@ -469,26 +437,24 @@
     mpv # media player
 
     # --- Cloud & backup (mirrors Brewfile) ---
-    rclone # Cloud-storage sync (your aliases lean on this)
+    rclone # Rclone sync tool for cloud storage (my aliases depend on it)
     borgbackup # Encrypted, deduplicating backups
 
     # --- Dev tooling (mirrors Brewfile) ---
     yamllint # YAML linter
     direnv # per-directory env loading (also enabled as program above)
-    stow # symlink-based dotfiles manager (you use this on macOS)
+    stow # Dotfiles manager (I also use this on macOS)
 
-    # --- Build essentials (you'll want these the first time you `make` anything) ---
+    # --- Build essentials (I'll need these the first time I try to run `make`) ---
     clang # Better error messages than gcc
     gcc
     gnumake
     pkg-config
 
     # --- Mason / Neovim toolchain ------------------------------------
-    # Mason needs these on $PATH to compile-from-source language
-    # servers, formatters, and linters. Pre-installing them here means
-    # `:Mason` "just works" without surprise build failures. They're
-    # also useful generally — keep, comment, or swap to per-project
-    # devshells later if you prefer the cleaner approach.
+    # I need these toolchains on my global $PATH so that Mason in Neovim can download
+    # and build LSP/linter servers. Putting them here makes my editor setup "just work"
+    # without surprise build failures. I can swap to per-project devshells later.
     nodejs_22 # typescript-language-server, prettier, eslint_d, vscode-* servers
     python3 # pyright, ruff, debugpy, etc.
     go # gopls, golangci-lint, delve
@@ -497,15 +463,11 @@
     tree-sitter # tree-sitter CLI — nvim-treesitter `:TSUpdate` calls this
 
     # --- Java toolchain ----------------------------------------------
-    # `jdk` is the default OpenJDK in nixpkgs (currently a recent LTS,
-    # JDK 21 on the 25.11 channel). If you need a specific major version
-    # use `jdk17`, `jdk21`, `jdk23`, etc. Maven and Gradle are the two
-    # build tools you'll meet most often.
+    # Using the default OpenJDK from nixpkgs. I'll get the LTS version (JDK 21 on 25.11/26.05).
+    # If I need to pin a specific version, I can use `jdk17`, `jdk21`, etc.
     #
-    # JAVA_HOME is set automatically by the wrapper — `java`, `javac`,
-    # and `jshell` will all be on $PATH after a rebuild. For per-project
-    # JDK pinning later, consider an `.envrc` with
-    # `use_flake` + a flake providing a specific `jdkXX`.
+    # My environment wrapper sets $JAVA_HOME automatically, meaning `java`, `javac`, and
+    # `jshell` will be on my $PATH. I can use direnv flakes for per-project JDK versions later.
     jdk # OpenJDK (latest LTS in this channel)
     maven # Maven build tool — `mvn`
     gradle # Gradle build tool — `gradle`
@@ -514,26 +476,23 @@
     # checkstyle              # Java linter
 
     # --- NixOS-specific helpers ---
-    nh # Modern wrapper for `nixos-rebuild` with diff/preview
-    nix-output-monitor # Prettier `nix build` output (pipe with `|& nom`)
-    nvd # Nix version diff — show what changed between generations
+    nh # My modern CLI wrapper for rebuilds so I can see diffs easily
+    nix-output-monitor # Prettier terminal output when building nix packages
+    nvd # Package diff tool so I can see exactly what changed between system updates
 
     # --- nixpkgs contributor toolkit ---------------------------------
-    # The de-facto dev-env for working in the nixpkgs repo. Most of
-    # these are referenced in nixpkgs's CONTRIBUTING.md and pkgs/README;
-    # together they cover review, version-bumps, package authoring,
-    # formatting, and linting. None of them are required to BUILD
-    # nixpkgs (a checkout + `nix-build` works without them) — but every
-    # one of them removes friction from the contributor loop.
+    # My toolkit for contributing to the nixpkgs repository. These match what's in the
+    # nixpkgs CONTRIBUTING.md guidelines. They help me write, lint, format, and test
+    # new package definitions.
     #
-    # Typical workflow:
-    #   1. `nixpkgs-review pr 12345`    → builds + sandbox-tests a PR
-    #   2. `nix-update <attr>`          → bumps a package version + hash
-    #   3. `nurl <url>`                 → emits a fetchFromGitHub block
-    #   4. `nix-init <url>`             → bootstraps a new derivation
-    #   5. `nixfmt-rfc-style file.nix`  → official formatter (RFC 166)
-    #   6. `statix check .`             → lint
-    #   7. `deadnix .`                  → find unused bindings
+    # My typical development workflow:
+    #   1. `nixpkgs-review pr 12345`    → review and build a PR in a sandbox
+    #   2. `nix-update <attr>`          → bump package version and update its hash
+    #   3. `nurl <url>`                 → get the fetcher setup for a URL
+    #   4. `nix-init <url>`             → bootstrap a brand new derivation
+    #   5. `nixfmt-rfc-style file.nix`  → format my Nix code according to RFC 166
+    #   6. `statix check .`             → run the style linter
+    #   7. `deadnix .`                  → scan for any unused nix variables
     nixpkgs-review # Build + test PRs locally in a sandbox
     nix-update # Auto-bump version + sha256 of a package
     nurl # Generate fetchFrom* expressions from URLs
@@ -548,37 +507,33 @@
     # vulnix                  # Scans your closure for known CVEs
     # editorconfig-checker    # nixpkgs CI uses this; nice for local checks
 
-    # Workflow note: when you `cd ~/path/to/nixpkgs`, drop a `.envrc`
-    # containing `use nix` (or `use flake`) so direnv + nix-direnv (both
-    # already enabled above) load the repo's own dev shell automatically.
-    # That gives you anything specific the nixpkgs tree ships in its
-    # `shell.nix` on top of the system-wide tools above.
+    # Note to self: when I `cd` into my local nixpkgs clone, I should drop a `.envrc`
+    # with `use nix` or `use flake` so direnv automatically loads the tree's dev shell.
 
     # --- GNOME tweakability ---
-    gnome-tweaks # Toggle hidden GNOME settings (fonts, animations, etc.)
-    dconf-editor # Raw GSettings registry editor — use with care
+    gnome-tweaks # To change hidden GNOME settings like fonts and animations
+    dconf-editor # Registry editor for GNOME settings — I should use this carefully
 
     # --- General system utilities ---
-    htop # Process viewer
-    btop # Prettier process viewer
-    unzip # zip extraction
+    htop # Classic process monitor
+    btop # Modern, pretty terminal process monitor
+    unzip # For extracting zip archives
     zip
-    p7zip # 7z / rar handling — your `extract` function uses these
-    unrar # rar extraction (your `extract` function calls `unrar`)
+    p7zip # 7z format support (my `extract` shell function depends on it)
+    unrar # RAR support (my `extract` function calls this)
     curl
     wget
     file # Identify file types
     tree # ASCII directory tree
 
     # --- OPTIONAL: extra git tooling --------------------------------
-    # Uncomment whichever you want.
+    # I can uncomment these if I want additional git CLI helpers.
     # lazygit                 # TUI git client
-    delta # Better git diff (set as core.pager in gitconfig)
+    delta # Better git diff pager, matching my gitconfig setup
 
     # --- OPTIONAL: extra language toolchains -------------------------
-    # node / python / go / cargo / jdk are already installed above.
-    # Only the less-common ones are listed here. Per-project flakes or
-    # devshells are usually a cleaner answer than going global.
+    # I've already installed Node, Python, Go, Rust, and Java above.
+    # For other languages, I prefer using per-project devshells instead of global installs.
     # rustup                  # rustc/cargo toolchain manager (replaces the cargo+rustc above if you prefer multiple toolchains)
     # zig
     # ghc                     # Haskell
@@ -587,13 +542,13 @@
     # scala                   # JVM, ditto
 
     # --- Password manager ---
-    keepassxc # Local KeePass-format password vault
+    keepassxc # My local KeePass password database reader
 
     # --- Security and Keychain injection handling ---
     libsecret
 
     # --- Mail ---
-    thunderbird # Mozilla email / calendar / news client
+    thunderbird # My preferred desktop email client
 
     # --- OPTIONAL: GUI apps ------------------------------------------
     # chromium
@@ -607,8 +562,7 @@
     # slack
 
     # --- OPTIONAL: GNOME extensions ----------------------------------
-    # Installing the package alone isn't enough — after a rebuild you
-    # also have to enable each one in gnome-tweaks → Extensions.
+    # Rebuilding isn't enough to activate these — I must also turn them on in gnome-tweaks.
     # gnomeExtensions.appindicator      # Legacy tray-icon support
     # gnomeExtensions.user-themes       # Custom shell themes
     # gnomeExtensions.dash-to-dock      # macOS-style permanent dock
@@ -619,24 +573,22 @@
   # SERVICES (commented, opt-in)
   # ============================================================
 
-  # List services that you want to enable:
+  # I can enable these background services if I ever need them:
 
-  # Enable the OpenSSH daemon.
+  # Enable the OpenSSH daemon for remote SSH access.
   # services.openssh.enable = true;
 
   # --- Flatpak (OPTIONAL) ----------------------------------------------
-  # Uncomment to enable: useful for GUI apps that aren't packaged in
-  # nixpkgs or whose nix package lags behind upstream. Requires
-  # xdg.portal so apps can talk to the file picker / screen sharer.
+  # I can uncomment this to enable Flatpaks, which is useful for proprietary GUI apps
+  # that aren't in nixpkgs or are outdated. It requires setting up xdg-desktop-portal.
   # services.flatpak.enable = true;
   # xdg.portal.enable = true;
   # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
 
   # --- Podman / containers (OPTIONAL) ----------------------------------
-  # Uncomment to enable: rootless container runtime, drop-in compatible
-  # with `docker` CLI (so `docker run ...` works). Preferable to Docker
-  # on NixOS because it doesn't need a system daemon. Add "podman" to
-  # users.users.chahat.extraGroups if you want non-sudo socket access.
+  # I can enable Podman here for a rootless container environment. It's drop-in compatible
+  # with the Docker CLI. I prefer this on NixOS since it doesn't run a system-wide daemon.
+  # I should add myself to the "podman" group if I want socket access without sudo.
   # virtualisation.podman = {
   #   enable = true;
   #   dockerCompat = true;
@@ -644,21 +596,19 @@
   # };
 
   # --- Docker alternative (OPTIONAL) -----------------------------------
-  # Uncomment to enable: only pick one of (podman, docker). If you flip
-  # this on, also add "docker" to chahat's extraGroups above.
+  # Alternative to Podman. I must only pick one of the two. If I use Docker, I need
+  # to add myself to the "docker" group under users.users.chahat.extraGroups.
   # virtualisation.docker.enable = true;
 
   # --- Libvirt / VMs (OPTIONAL) ----------------------------------------
-  # Uncomment to enable: KVM + QEMU + virt-manager GUI for running
-  # VMs (other Linux distros, Windows, etc). Add "libvirtd" to
-  # extraGroups if you flip this on.
+  # I can enable virtualisation here to run local VMs (like other distros or Windows)
+  # via KVM/QEMU and virt-manager. I'll need to add my user to "libvirtd" as well.
   # virtualisation.libvirtd.enable = true;
   # programs.virt-manager.enable = true;
 
   # --- Borg automated backup (OPTIONAL) --------------------------------
-  # Uncomment and edit paths to enable: nightly encrypted backup of
-  # your home dir. You'll need to `borg init` the repo once before
-  # the timer can run successfully. Replace REPO and PASSCOMMAND.
+  # I can enable nightly automated Borg backups of my home directory here.
+  # I'll need to run `borg init` on the target repository first before the schedule works.
   # services.borgbackup.jobs.home = {
   #   paths = [ "/home/chahat" ];
   #   exclude = [ "/home/chahat/.cache" "/home/chahat/Downloads" ];
@@ -674,25 +624,20 @@
   # ============================================================
   # SYNCTHING — peer-to-peer file sync
   # ============================================================
-  # Continuous, encrypted folder sync between your devices over LAN
-  # or internet (no cloud middleman, no account). After a rebuild,
-  # open http://localhost:8384 to add devices and folders via the
-  # web UI. The first time you run it, syncthing prints a Device ID
-  # — share that with your other devices to pair.
+  # I'm using Syncthing for peer-to-peer directory syncing across my devices.
+  # I can access the UI at http://localhost:8384 to link devices and folders.
+  # On first launch, it will show my Device ID which I can share to pair my devices.
   #
-  # Folder defaults to /home/chahat (`dataDir`); created folders
-  # appear in there unless you pick another path in the UI.
+  # Syncthing defaults to my home directory as the data base path.
   services.syncthing = {
     enable = true;
     user = "chahat";
     dataDir = "/home/chahat";
     configDir = "/home/chahat/.config/syncthing";
 
-    # Keep these `false` so devices/folders you add through the web
-    # UI persist across rebuilds. Flip to `true` only if you want to
-    # manage every device and folder declaratively in this file
-    # (in which case anything not declared here gets removed on
-    # every `nixos-rebuild switch` — easy to lose data).
+    # I want these set to false so any directories or devices I link in the web UI
+    # persist across my system rebuilds. If I turned this to true, I'd have to define
+    # every single device/folder in this Nix file, or else it would wipe them out.
     overrideDevices = false;
     overrideFolders = false;
   };
@@ -700,25 +645,22 @@
   # ============================================================
   # FIREWALL
   # ============================================================
-  # NixOS enables the firewall by default; we only need to poke
-  # holes for the services that talk to other machines.
+  # Since NixOS turns on the firewall by default, I need to open the ports
+  # that my background services use to communicate with my local network.
   #
-  # Syncthing port reference:
-  #   22000 TCP/UDP — actual sync traffic (encrypted)
-  #   21027 UDP     — LAN device discovery (multicast)
-  #   8384  TCP     — web UI; intentionally NOT exposed (localhost only)
+  # Ports I need open for Syncthing:
+  #   22000 TCP/UDP — for the encrypted syncing traffic
+  #   21027 UDP     — for local network discovery protocol
+  #   8384  TCP     — my admin UI (I intentionally keep this closed to external networks)
   networking.firewall.allowedTCPPorts = [ 22000 ];
   networking.firewall.allowedUDPPorts = [ 22000 21027 ];
 
-  # Or disable the firewall altogether.
+  # If I ever want to disable the firewall entirely, I'd uncomment this:
   # networking.firewall.enable = false;
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
+  # This value sets the initial NixOS release version of this system's install to determine
+  # legacy default behaviors for databases and state files. I should leave this alone
+  # even when I upgrade my package channels/flakes so I don't break existing databases.
+  system.stateVersion = "25.11"; # Yes, I read the comment. I'm keeping it at my original install version.
 
 }

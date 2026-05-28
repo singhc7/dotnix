@@ -15,9 +15,8 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/>.
 
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# My nix-darwin configuration file where I define my Apple Silicon Mac setup.
+# I can refer to the nix-darwin documentation or run man pages if I need help.
 { config, pkgs, ... }:
 
 {
@@ -26,116 +25,113 @@
   # ============================================================
 
   # --- Lix (macOS Specific) -------------------------------------------
-  # Specify Lix as the underlying package manager instead of standard C++ Nix.
+  # I'm specifying Lix as my underlying package manager here instead of using the standard C++ Nix.
   nix.package = pkgs.lix;
 
-  # Enable flakes and the modern `nix` CLI. Required by nix-direnv,
-  # `nh`, and almost every modern NixOS/darwin guide. Safe to leave on.
+  # I'll enable flakes and the modern `nix` CLI. I need this for nix-direnv, `nh`,
+  # and basically every modern NixOS/darwin guide I follow. Definitely safe to leave on.
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Hard-link identical files in /nix/store to save disk space. Tiny
-  # build-time cost, big space savings over months of system updates.
+  # I want to hard-link identical files in my /nix/store to save disk space.
+  # The build-time cost is tiny, but the space savings over months of updates are huge.
   nix.settings.auto-optimise-store = true;
 
-  # Automatic garbage collection. Without this, /nix/store grows
-  # forever. Runs weekly, removes profile generations older than 14
-  # days that aren't referenced by your active system. If you want a
-  # bigger rollback window, change "14d" → "30d" or "90d".
+  # I need automatic garbage collection so my /nix/store doesn't grow forever.
+  # I'll run it weekly to wipe out profile generations older than 14 days that my
+  # active system isn't using. If I want a bigger rollback window, I can change "14d" to "30d".
   nix.gc = {
     automatic = true;
-    interval = { Weekday = 0; Hour = 0; Minute = 0; }; # darwin equivalent to "weekly"
+    interval = { Weekday = 0; Hour = 0; Minute = 0; }; # My darwin equivalent to running this "weekly"
     options = "--delete-older-than 14d";
   };
 
-  # Allow unfree packages
+  # I need to allow unfree packages so I can install proprietary software on my Mac.
   nixpkgs.config.allowUnfree = true;
 
   # ============================================================
   # USERS
   # ============================================================
-  # Define a user account.
+  # Defining my user account.
   users.users.chahat = {
     name = "chahat";
     home = "/Users/chahat";
     description = "Chahatpreet Singh";
 
-    # Make zsh the login shell. The dotfiles in ~/dotfiles/zsh expect
-    # this. `programs.zsh.enable` below registers zsh as a valid login
-    # shell so chsh / this option won't fail validation.
+    # I want zsh as my login shell since my dotfiles in ~/dotfiles/zsh expect it.
+    # Enabling `programs.zsh.enable` below registers it so nix-darwin doesn't complain.
     shell = pkgs.zsh;
 
-    # Per-user packages go here. Because this is a shared macOS
-    # machine, we intentionally install everything here instead of
-    # environment.systemPackages so any future user account on this
-    # box does not get polluted with your toolkit.
+    # I'll list my per-user packages here. Since this is a shared macOS machine,
+    # I'm deliberately installing my tools here instead of environment.systemPackages
+    # so that I don't pollute other user profiles with my personal dev toolkit.
     packages = with pkgs; [
       # --- Editor ---
-      neovim # Your editor; kickstart config in ~/.config/nvim
+      neovim # My text editor of choice; kickstart config lives in ~/.config/nvim
 
       # --- Terminal & multiplexer ---
-      tmux # Terminal multiplexer
+      tmux # Terminal multiplexer for terminal sessions
 
-      # --- File search & navigation (mirrors NixOS) ---
-      fd # find-replacement
-      fzf # fuzzy finder
-      ripgrep # grep-replacement (rg)
-      zoxide # smart cd (z / zi)
-      bat # cat-replacement with syntax highlighting
-      eza # ls-replacement, used heavily in your aliases
-      tealdeer # `tldr` man-page summaries
+      # --- File search & navigation (matching my NixOS setup) ---
+      fd # Fast alternative to `find`
+      fzf # Command-line fuzzy finder
+      ripgrep # Faster grep tool (`rg`)
+      zoxide # Smart directory jumper (`z`)
+      bat # Syntactically highlighted cat
+      eza # Modern ls replacement that I use heavily in my aliases
+      tealdeer # Fast tldr client for quick man page lookups
 
       # --- Git tools ---
-      # git  It comes pre-installed with Xcode cli tools
-      pre-commit # Pre-commit hooks
-      gh # GitHub CLI — auth, PR review, issue triage from terminal
-      delta # Better git diff
+      # git is preinstalled via Xcode CLI tools, so I don't need to put it here
+      pre-commit # For managing my git commit hooks
+      gh # GitHub CLI for triaging PRs and issues
+      delta # My preferred git diff pager
 
-      # --- Downloads & media (mirrors NixOS) ---
-      aria2 # multi-connection downloader
-      yt-dlp # YouTube / video downloader
-      # mpv  iina is preferred on Mac instead
+      # --- Downloads & media (matching my NixOS setup) ---
+      aria2 # High-speed download utility
+      yt-dlp # For downloading videos from YouTube and elsewhere
+      # mpv is replaced on my Mac by the native IINA player, so I don't install it here
       ffmpeg
 
       # --- Cloud & backup ---
-      rclone # Cloud-storage sync (your aliases lean on this)
-      borgbackup # Encrypted, deduplicating backups
+      rclone # Cloud sync utility that my shell aliases depend on
+      borgbackup # Encryption-ready backups
 
       # --- Dev tooling ---
-      stow # symlink-based dotfiles manager
-      yamllint # YAML linter
+      stow # GNU Stow for managing my symlinked dotfiles
+      yamllint # Linter for YAML files
 
-      # --- Build essentials (for local builds/compiling) ---
+      # --- Build essentials (for compiling local tools) ---
       gnumake
       pkg-config
 
-      # --- Mason / Neovim toolchain (mirrors NixOS) ---
-      nodejs_22 # typescript-language-server, prettier, eslint_d, vscode-* servers
-      python3 # pyright, ruff, debugpy, etc.
-      go # gopls, golangci-lint, delve
-      cargo # rust-analyzer (when built from source) + many Mason tools
-      rustc # paired with cargo
-      tree-sitter # tree-sitter CLI — nvim-treesitter `:TSUpdate` calls this
+      # --- Mason / Neovim toolchain (matching my NixOS setup) ---
+      nodejs_22 # typescript server, prettier, and eslint_d
+      python3 # pyright, ruff, and debugpy
+      go # gopls and delve debugger
+      cargo # Rust build tool
+      rustc # Rust compiler
+      tree-sitter # CLI tool for tree-sitter updates in Neovim
 
-      # --- Java toolchain (mirrors NixOS) ---
-      jdk # OpenJDK (latest LTS in this channel)
-      maven # Maven build tool — `mvn`
-      gradle # Gradle build tool — `gradle`
+      # --- Java toolchain (matching my NixOS setup) ---
+      jdk # The default OpenJDK package (tracks latest LTS)
+      maven # Build tool for Java projects
+      gradle # Another Java build tool
 
-      # --- Nix-specific helpers (mirrors NixOS) ---
-      nh # Modern wrapper for `darwin-rebuild` with diff/preview
-      nix-output-monitor # Prettier `nix build` output (pipe with `|& nom`)
-      nvd # Nix version diff — show what changed between generations
+      # --- Nix-specific helpers (matching my NixOS setup) ---
+      nh # My CLI helper for darwin-rebuild switches
+      nix-output-monitor # Cleaner formatting during nix builds
+      nvd # Let's me see the package version diffs between my system updates
 
       # --- General system utilities ---
-      htop # Process viewer
-      btop # Prettier process viewer
-      unzip # zip extraction
+      htop # Interactive process monitor
+      btop # Eye-candy process monitor
+      unzip # Zip archive extractor
       zip
-      p7zip # 7z / rar handling — your `extract` function uses these
+      p7zip # 7-zip support for my custom `extract` shell function
       curl
       wget
-      file # Identify file types
-      tree # ASCII directory tree
+      file # Utility to determine file types
+      tree # Displays directory structure as a tree
     ];
   };
 
@@ -143,22 +139,21 @@
   # ZSH & INTEGRATIONS
   # ============================================================
 
-  # Enable zsh system-wide. We don't turn on zsh-autosuggestions /
-  # syntax-highlighting via NixOS modules because your dotfiles already
-  # manage these via antidote — turning both on would double-load them.
+  # I'm enabling zsh system-wide here. I shouldn't enable zsh-autosuggestions or
+  # syntax-highlighting modules here because my dotfiles manage them using antidote.
+  # Doing it in both places would load them twice and slow down my shell startup.
   programs.zsh.enable = true;
 
-  # Direnv with nix-direnv. Your dotfiles already hook direnv into zsh
-  # (`eval "$(direnv hook zsh)"` in integrations.zsh), so the only thing
-  # we add here is the nix-direnv glue, which makes `use flake` and
-  # `use nix` blazing fast (cached) inside .envrc files.
+  # I'm setting up direnv and nix-direnv. Since my dotfiles already load direnv in my
+  # shell configuration (`eval "$(direnv hook zsh)"`), I just need this nix-direnv glue
+  # to cache environments so `use flake` and `use nix` are fast inside my .envrc files.
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
   };
 
-  # nix-index — fast lookup of "which package provides this binary?".
-  # Includes the `comma` (`,`) helper.
+  # I'm enabling nix-index so I can quickly figure out which package provides a given command.
+  # This makes the comma (`,`) helper work so I can run temporary commands on the fly.
   programs.nix-index = {
     enable = true;
   };
@@ -166,16 +161,16 @@
   # ============================================================
   # APPS / TOOLS (HOMEBREW)
   # ============================================================
-  # This block replaces your custom ~/.homebrew setup, integrating
-  # cleanly with nix-darwin to solve the shared user pollution problem.
+  # This block manages my Homebrew setups. By letting nix-darwin control it, I avoid manual
+  # ~/.homebrew setups and ensure my Mac is cleanly configured.
   homebrew = {
     enable = true;
 
-    # "zap" uninstalls any casks/formulas you didn't explicitly list below
+    # "zap" will uninstall any casks/formulae that I don't explicitly list below
     onActivation.cleanup = "zap";
 
-    # Force casks to install to YOUR user's Applications folder
-    # completely isolating GUI apps from other profiles on this Mac.
+    # I want to force casks to install to my user's ~/Applications directory,
+    # keeping my GUI applications isolated from other user accounts on this Mac.
     caskArgs.appdir = "~/Applications";
 
     casks = [
@@ -187,14 +182,12 @@
       "thunderbird"
     ];
 
-    # Add syncthing to your brews, but use an attribute set
-    # instead of a plain string.
+    # Adding Syncthing here to my brews. I'll configure it via an attribute set.
     brews = [
       {
         name = "syncthing";
-        # Ensures that the daemon is kept alive and will only
-        # be actively restarted if a darwin-rebuild command pulls
-        # down a newer version of Syncthing.
+        # I want to make sure the daemon is kept alive and only restarted when a
+        # darwin-rebuild command pulls down a newer version of Syncthing.
         restart_service = "changed";
       }
     ];
@@ -203,27 +196,25 @@
   # ============================================================
   # FONTS
   # ============================================================
-  # Your kitty + Powerlevel10k config rely on Nerd Font glyphs (the
-  # icons you see in eza, p10k segments, devicons in nvim). Without
-  # these you get tofu/squares. JetBrainsMono is the "main" font; the
-  # rest cover Unicode coverage gaps (CJK, emoji).
+  # My Kitty and Powerlevel10k configs rely heavily on Nerd Font icons (used by eza, p10k,
+  # and devicons in Neovim). Without these, I'll get broken tofu boxes. JetBrainsMono is
+  # my main font, and I'll add Noto fonts to cover CJK and emojis.
   fonts.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono # Primary terminal font
-    nerd-fonts.fira-code # Backup, in case you switch
+    nerd-fonts.jetbrains-mono # My primary terminal font
+    nerd-fonts.fira-code # My backup font, in case I want to swap
     noto-fonts # Broad Unicode coverage
-    noto-fonts-cjk-sans # Chinese / Japanese / Korean
-    noto-fonts-color-emoji # Color emoji
+    noto-fonts-cjk-sans # Support for CJK characters
+    noto-fonts-color-emoji # Color emojis
   ];
 
   # ============================================================
   # SYSTEM SETTINGS
   # ============================================================
-  # This value determines the nix-darwin release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  system.stateVersion = 5; # equivalent to NixOS stateVersion
+  # This value sets the initial nix-darwin release version of this system's install to determine
+  # legacy default behaviors for database paths and files. I should leave this alone
+  # even when I upgrade my package channels/flakes so I don't break existing databases.
+  system.stateVersion = 5; # This is my original install state version, equivalent to NixOS stateVersion.
 
-  # Define a primary user to handle Homebrew's ownership
+  # Defining myself as the primary user to manage Homebrew's permissions.
   system.primaryUser = "chahat";
 }
