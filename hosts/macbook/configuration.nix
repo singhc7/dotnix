@@ -132,6 +132,9 @@
       wget
       file # Utility to determine file types
       tree # Displays directory structure as a tree
+
+      # --- zsh toolkit ---
+      antidote # Z shell plugin manager
     ];
   };
 
