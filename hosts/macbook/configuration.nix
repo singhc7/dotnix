@@ -98,7 +98,7 @@
 
       # --- Dev tooling ---
       stow # GNU Stow for managing my symlinked dotfiles
-      yamllint # Linter for YAML files
+      yamlfmt # Linter for YAML files by google
 
       # --- Build essentials (for compiling local tools) ---
       gnumake

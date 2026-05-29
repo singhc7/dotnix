@@ -63,7 +63,7 @@
 
     # --- Dev tooling & build essentials ---
     stow # GNU Stow for managing my symlinked dotfiles
-    yamllint # Linter for YAML files
+    yamlfmt # Linter for YAML files by google
     gnumake # Standard make build tool
     pkg-config # Package compiler helper
 

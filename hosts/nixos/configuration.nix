@@ -441,7 +441,7 @@
     borgbackup # Encrypted, deduplicating backups
 
     # --- Dev tooling (mirrors Brewfile) ---
-    yamllint # YAML linter
+    yamlfmt # YAML linter by google
     direnv # per-directory env loading (also enabled as program above)
     stow # Dotfiles manager (I also use this on macOS)
 
