@@ -104,7 +104,7 @@
   # ============================================================
   # I'm enabling Zsh here. Since this is standalone Home Manager,
   # I want to register it so Home Manager handles its initialization.
-  programs.zsh.enable = true;
+  programs.zsh.enable = false; # Temporarily switching it to false.
 
   # I'm setting up direnv and nix-direnv. Since my dotfiles already load direnv in my
   # shell configuration (`eval "$(direnv hook zsh)"`), I just need this nix-direnv glue
