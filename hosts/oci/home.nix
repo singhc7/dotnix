@@ -82,6 +82,7 @@
     nh # My CLI helper for home-manager rebuild switches
     nix-output-monitor # Cleaner formatting during nix builds
     nvd # Let's me see the package version diffs between my rebuilds
+    pkgs.nixfmt # Official nixpkgs repo formatter
 
     # --- General system utilities ---
     htop # Interactive process monitor
