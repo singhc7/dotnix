@@ -479,6 +479,7 @@
     nh # My modern CLI wrapper for rebuilds so I can see diffs easily
     nix-output-monitor # Prettier terminal output when building nix packages
     nvd # Package diff tool so I can see exactly what changed between system updates
+    pkgs.nixfmt # Official nix repo formatter
 
     # --- nixpkgs contributor toolkit ---------------------------------
     # My toolkit for contributing to the nixpkgs repository. These match what's in the

@@ -121,6 +121,7 @@
       nh # My CLI helper for darwin-rebuild switches
       nix-output-monitor # Cleaner formatting during nix builds
       nvd # Let's me see the package version diffs between my system updates
+      pkgs.nixfmt # Official nix repo formatter
 
       # --- General system utilities ---
       htop # Interactive process monitor
