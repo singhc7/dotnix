@@ -30,7 +30,10 @@
 
   # I'll enable flakes and the modern `nix` CLI. I need this for nix-direnv, `nh`,
   # and basically every modern NixOS/darwin guide I follow. Definitely safe to leave on.
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # I want to hard-link identical files in my /nix/store to save disk space.
   # The build-time cost is tiny, but the space savings over months of updates are huge.
@@ -41,7 +44,11 @@
   # active system isn't using. If I want a bigger rollback window, I can change "14d" to "30d".
   nix.gc = {
     automatic = true;
-    interval = { Weekday = 0; Hour = 0; Minute = 0; }; # My darwin equivalent to running this "weekly"
+    interval = {
+      Weekday = 0;
+      Hour = 0;
+      Minute = 0;
+    }; # My darwin equivalent to running this "weekly"
     options = "--delete-older-than 14d";
   };
 
@@ -184,6 +191,7 @@
       "kitty"
       "libreoffice"
       "thunderbird"
+      "zen"
     ];
 
     # Adding Syncthing here to my brews. I'll configure it via an attribute set.
