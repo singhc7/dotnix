@@ -55,6 +55,7 @@
     pre-commit # For managing my git commit hooks
     gh # GitHub CLI for managing PRs and issues
     delta # My preferred git diff pager
+    difftastic # Testing new git diff tool
 
     # --- Cloud & backup ---
     rclone # Cloud sync utility that my shell aliases depend on
