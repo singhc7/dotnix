@@ -77,6 +77,7 @@
 
       # --- Terminal & multiplexer ---
       tmux # Terminal multiplexer for terminal sessions
+      mosh # SSH replacement
 
       # --- File search & navigation (matching my NixOS setup) ---
       fd # Fast alternative to `find`
