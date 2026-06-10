@@ -64,9 +64,9 @@
 
     # --- Dev tooling & build essentials ---
     stow # GNU Stow for managing my symlinked dotfiles
-    yamlfmt # Linter for YAML files by google
     gnumake # Standard make build tool
     pkg-config # Package compiler helper
+    clang-tools # Library for clang toolkit
 
     # --- Toolchains ---
     nodejs_22 # typescript server, prettier, and eslint_d
