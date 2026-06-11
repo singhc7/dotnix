@@ -21,11 +21,10 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [
-      # I need to import the hardware configuration generated for this laptop.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    # I need to import the hardware configuration generated for this laptop.
+    ./hardware-configuration.nix
+  ];
 
   # ============================================================
   # BOOTLOADER
@@ -52,7 +51,10 @@
   # ============================================================
   # I'm enabling flakes and the modern `nix` CLI. I need this for nix-direnv,
   # `nh`, and pretty much every modern NixOS guide I follow. Definitely safe to leave on.
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # I want to hard-link identical files in my /nix/store to save precious disk space.
   # It has a tiny build-time overhead, but the space savings over months of updates are huge.
@@ -143,21 +145,24 @@
   # GNOME ships with a bunch of default apps I'm never going to use. I'm excluding
   # them here so they don't clutter my app grid or bloat my nix store closure.
   # If I ever need one of these back, I can just delete it from this list.
-  environment.gnome.excludePackages = (with pkgs; [
-    gnome-tour # I don't need a first-run tutorial slideshow
-    gnome-connections # I don't use this RDP/VNC client
-    epiphany # I use Firefox instead of this GNOME Web browser
-    geary # I don't need this email client
-    totem # I use mpv for video playing
-    yelp # I don't need the GNOME help viewer
-    gnome-music # I don't use the GNOME music player
-    gnome-contacts # I don't need a contacts manager here
-    gnome-maps # I don't need GNOME Maps on my laptop
-    gnome-weather # I don't need this weather widget
-    gnome-clocks # I don't need this clock/timer app
-    simple-scan # I don't have a scanner hooked up
-    cheese # I don't need the webcam toy
-  ]);
+  environment.gnome.excludePackages = (
+    with pkgs;
+    [
+      gnome-tour # I don't need a first-run tutorial slideshow
+      gnome-connections # I don't use this RDP/VNC client
+      epiphany # I use Firefox instead of this GNOME Web browser
+      geary # I don't need this email client
+      totem # I use mpv for video playing
+      yelp # I don't need the GNOME help viewer
+      gnome-music # I don't use the GNOME music player
+      gnome-contacts # I don't need a contacts manager here
+      gnome-maps # I don't need GNOME Maps on my laptop
+      gnome-weather # I don't need this weather widget
+      gnome-clocks # I don't need this clock/timer app
+      simple-scan # I don't have a scanner hooked up
+      cheese # I don't need the webcam toy
+    ]
+  );
 
   # GNOME ships its own power daemon, but I'm disabling it because I use TLP
   # below to get much better control over my laptop's battery life. The two
@@ -273,7 +278,11 @@
     description = "Chahatpreet Singh";
     # Adding my user to `video` so I can adjust screen brightness without needing sudo.
     # I'll need to add "docker" or "libvirtd" here later if I enable those services.
-    extraGroups = [ "networkmanager" "wheel" "video" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "video"
+    ];
 
     # I want zsh to be my default login shell since my dotfiles in ~/dotfiles/zsh expect it.
     # Enabling `programs.zsh.enable` below registers it so this setting is validated.
@@ -446,7 +455,7 @@
     stow # Dotfiles manager (I also use this on macOS)
 
     # --- Build essentials (I'll need these the first time I try to run `make`) ---
-    clang # Better error messages than gcc
+    clang-tools # Installs the clang toolkit, provides clang, clang-format etc.
     gcc
     gnumake
     pkg-config
@@ -654,7 +663,10 @@
   #   21027 UDP     — for local network discovery protocol
   #   8384  TCP     — my admin UI (I intentionally keep this closed to external networks)
   networking.firewall.allowedTCPPorts = [ 22000 ];
-  networking.firewall.allowedUDPPorts = [ 22000 21027 ];
+  networking.firewall.allowedUDPPorts = [
+    22000
+    21027
+  ];
 
   # If I ever want to disable the firewall entirely, I'd uncomment this:
   # networking.firewall.enable = false;
