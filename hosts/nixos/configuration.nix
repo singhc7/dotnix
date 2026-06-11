@@ -652,6 +652,60 @@
     overrideFolders = false;
   };
 
+  # Custom keybindigs using keyd
+  services.keyd = {
+    enable = true;
+    keyboards.default = {
+      ids = [ "*" ];
+      settings = {
+
+        main = {
+          # [Ctrl] Caps Lock → Escape (tap) / Control (hold)
+          capslock = "overload(control, esc)";
+
+          # [Hyper] Right Alt → Right Alt (tap) / Hyper Layer (hold)
+          # Keeps your right thumb exactly where it expects to be
+          rightalt = "overload(hyper, rightalt)";
+        };
+
+        # The Hyper layer triggers your custom navigation and media controls
+        hyper = {
+          # [Nav] Vim-style arrows
+          h = "left";
+          j = "down";
+          k = "up";
+          l = "right";
+
+          # [Nav] Long-distance nav
+          u = "home";
+          i = "pagedown";
+          o = "pageup";
+          p = "end";
+
+          # [Edit] Forward delete
+          backspace = "delete";
+
+          # [Media] Volume controls
+          "," = "volumedown";
+          "." = "volumeup";
+          "/" = "mute";
+        };
+
+        # [Mod] Left ⇧ + Right ⇧ → Caps Lock toggle
+        chords = {
+          "leftshift+rightshift" = "capslock";
+        };
+
+        # [Safety] Hold Alt+Q to quit (350ms)
+        # Binds the safety net to the Alt layer, emitting Alt+Q (A-q) on hold
+        alt = {
+          q = "timeout(macro(), 350, A-q)";
+        };
+
+      };
+    };
+  };
+
   # ============================================================
   # FIREWALL
   # ============================================================
