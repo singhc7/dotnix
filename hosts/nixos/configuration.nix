@@ -666,6 +666,9 @@
           # [Hyper] Right Alt → Right Alt (tap) / Hyper Layer (hold)
           # Keeps your right thumb exactly where it expects to be
           rightalt = "overload(hyper, rightalt)";
+
+          # [Right Shift] Right Shift -> Tab (tap) / Right Shift (hold)
+          rightshift = "overload(rightshift, tab)";
         };
 
         # The Hyper layer triggers your custom navigation and media controls
