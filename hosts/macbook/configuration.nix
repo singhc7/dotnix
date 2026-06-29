@@ -178,7 +178,8 @@
     enable = true;
 
     # "zap" will uninstall any casks/formulae that I don't explicitly list below
-    onActivation.cleanup = "zap";
+    # This has been changed temporarily to none due to an upstream breakage.
+    onActivation.cleanup = "none";
 
     # I want to force casks to install to my user's ~/Applications directory,
     # keeping my GUI applications isolated from other user accounts on this Mac.
