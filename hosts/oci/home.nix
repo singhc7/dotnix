@@ -35,6 +35,10 @@
   # these and symlink them into my user's profile. I've mirrored most of my standard
   # NixOS and macOS terminal utility toolkit here so my cloud shell feels like home.
   home.packages = with pkgs; [
+
+    # --- Bittorrent handler ---
+    aria2
+
     # --- Editor & Multiplexer ---
     neovim # My main editor, kickstart config synced via dotfiles
     tmux # Terminal multiplexer so I can keep sessions alive when SSH disconnects
