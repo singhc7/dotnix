@@ -66,6 +66,9 @@
     borgbackup # Encryption-ready backups
     syncthing # For syncing files between this VM and my other devices
 
+    # --- Cloud streaming ---
+    zrok
+
     # --- Dev tooling & build essentials ---
     stow # GNU Stow for managing my symlinked dotfiles
     gnumake # Standard make build tool
