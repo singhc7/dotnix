@@ -103,6 +103,9 @@
       rclone # Cloud sync utility that my shell aliases depend on
       borgbackup # Encryption-ready backups
 
+      # --- Cloud streaming ---
+      zrok
+
       # --- Dev tooling ---
       stow # GNU Stow for managing my symlinked dotfiles
       yamlfmt # Linter for YAML files by google
